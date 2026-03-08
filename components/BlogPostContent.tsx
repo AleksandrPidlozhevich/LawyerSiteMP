@@ -10,7 +10,6 @@ import {
   ChevronRight, 
   FileText, 
   Download, 
-  Play, 
   Bookmark, 
   CheckSquare, 
   Square,
@@ -25,8 +24,51 @@ interface BlogPostContentProps {
   post: BlogPost;
 }
 
+type NotionRichTextAnnotation = {
+  bold?: boolean;
+  italic?: boolean;
+  strikethrough?: boolean;
+  underline?: boolean;
+  code?: boolean;
+  color?: string;
+};
+
+type NotionRichText = {
+  plain_text: string;
+  annotations?: NotionRichTextAnnotation;
+  href?: string | null;
+};
+
+type NotionBlockValue = {
+  rich_text?: NotionRichText[];
+  caption?: NotionRichText[];
+  is_toggleable?: boolean;
+  checked?: boolean;
+  language?: string;
+  url?: string;
+  type?: 'external' | 'file';
+  external?: { url?: string };
+  file?: { url?: string };
+  name?: string;
+  icon?: { emoji?: string };
+  expression?: string;
+  has_column_header?: boolean;
+  has_row_header?: boolean;
+  table_row?: { cells?: NotionRichText[][] };
+  page_id?: string;
+  database_id?: string;
+  title?: string;
+};
+
+type NotionBlockNode = {
+  id: string;
+  type: string;
+  children?: NotionBlockNode[];
+  [key: string]: unknown;
+};
+
 // Create a context to share blog post data with all components
-const BlogPostContext = React.createContext<{ post: BlogPost; blocks: any[] } | undefined>(undefined);
+const BlogPostContext = React.createContext<{ post: BlogPost; blocks: NotionBlockNode[] } | undefined>(undefined);
 
 const useBlogPost = () => {
   const context = React.useContext(BlogPostContext);
@@ -37,8 +79,8 @@ const useBlogPost = () => {
 };
 
 // Helper to render Rich Text with annotations
-const RichTextRenderer = ({ text }: { text: any[] }) => {
-  if (!text) return null;
+const RichTextRenderer = ({ text }: { text?: NotionRichText[] }) => {
+  if (!text || text.length === 0) return null;
   
   return (
     <>
@@ -78,12 +120,12 @@ const RichTextRenderer = ({ text }: { text: any[] }) => {
 };
 
 // Component to render a list of blocks, handling grouping of list items
-const BlockListRenderer = ({ blocks }: { blocks: any[] }) => {
+const BlockListRenderer = ({ blocks }: { blocks: NotionBlockNode[] }) => {
   if (!blocks || blocks.length === 0) return null;
 
-  const result = [];
+  const result: React.ReactNode[] = [];
   let currentListType: string | null = null;
-  let currentList: any[] = [];
+  let currentList: NotionBlockNode[] = [];
 
   blocks.forEach((block, index) => {
     if (block.type === 'bulleted_list_item' || block.type === 'numbered_list_item') {
@@ -134,11 +176,12 @@ const TableOfContents = () => {
   const headings = React.useMemo(() => {
     const results: { id: string; text: string; level: number }[] = [];
     
-    const traverse = (nodes: any[]) => {
+    const traverse = (nodes: NotionBlockNode[]) => {
       if (!nodes) return;
       nodes.forEach(node => {
         if (node.type === 'heading_1' || node.type === 'heading_2' || node.type === 'heading_3') {
-          const text = node[node.type].rich_text.map((t: any) => t.plain_text).join('');
+          const nodeValue = node[node.type] as NotionBlockValue;
+          const text = nodeValue.rich_text?.map((t) => t.plain_text).join('') ?? '';
           const level = parseInt(node.type.replace('heading_', ''));
           results.push({ id: node.id, text, level });
         }
@@ -181,11 +224,10 @@ const TableOfContents = () => {
 };
 
 // Recursive Block Renderer
-const BlockRenderer = ({ block }: { block: any }) => {
+const BlockRenderer = ({ block }: { block: NotionBlockNode }) => {
   const { type, id } = block;
-  const value = block[type];
-  const { fontSize } = useAccessibility();
-  const { blocks: allBlocks } = useBlogPost();
+  const value = block[type] as NotionBlockValue;
+  const children = block.children ?? [];
 
   if (!value && type !== 'divider' && type !== 'column_list' && type !== 'column' && type !== 'breadcrumb' && type !== 'table_of_contents' && type !== 'template') return null;
 
@@ -205,8 +247,7 @@ const BlockRenderer = ({ block }: { block: any }) => {
       );
       
     case 'template':
-       // Render children of the template block
-       return <BlockListRenderer blocks={block.children} />;
+       return <BlockListRenderer blocks={children} />;
 
     case 'paragraph':
       return (
@@ -224,7 +265,7 @@ const BlockRenderer = ({ block }: { block: any }) => {
               <span><RichTextRenderer text={value.rich_text} /></span>
             </summary>
             <div className="pl-8 border-l-2 border-muted ml-3">
-              <BlockListRenderer blocks={block.children} />
+              <BlockListRenderer blocks={children} />
             </div>
           </details>
         );
@@ -244,7 +285,7 @@ const BlockRenderer = ({ block }: { block: any }) => {
               <span><RichTextRenderer text={value.rich_text} /></span>
             </summary>
             <div className="pl-7 border-l-2 border-muted ml-2.5">
-              <BlockListRenderer blocks={block.children} />
+              <BlockListRenderer blocks={children} />
             </div>
           </details>
         );
@@ -264,7 +305,7 @@ const BlockRenderer = ({ block }: { block: any }) => {
               <span><RichTextRenderer text={value.rich_text} /></span>
             </summary>
             <div className="pl-6 border-l-2 border-muted ml-2">
-              <BlockListRenderer blocks={block.children} />
+              <BlockListRenderer blocks={children} />
             </div>
           </details>
         );
@@ -279,9 +320,9 @@ const BlockRenderer = ({ block }: { block: any }) => {
       return (
         <li className="list-disc ml-5 mb-1 pl-1 marker:text-muted-foreground">
           <RichTextRenderer text={value.rich_text} />
-          {block.children?.length > 0 && (
+          {children.length > 0 && (
              <div className="mt-1">
-                <BlockListRenderer blocks={block.children} />
+               <BlockListRenderer blocks={children} />
              </div>
           )}
         </li>
@@ -291,9 +332,9 @@ const BlockRenderer = ({ block }: { block: any }) => {
       return (
         <li className="list-decimal ml-5 mb-1 pl-1 marker:text-muted-foreground">
           <RichTextRenderer text={value.rich_text} />
-           {block.children?.length > 0 && (
+           {children.length > 0 && (
              <div className="mt-1">
-                <BlockListRenderer blocks={block.children} />
+               <BlockListRenderer blocks={children} />
              </div>
           )}
         </li>
@@ -312,9 +353,9 @@ const BlockRenderer = ({ block }: { block: any }) => {
           <div className={cn(value.checked && "line-through text-muted-foreground")}>
             <RichTextRenderer text={value.rich_text} />
           </div>
-           {block.children?.length > 0 && (
+           {children.length > 0 && (
              <div className="ml-7 mt-1 w-full">
-                <BlockListRenderer blocks={block.children} />
+               <BlockListRenderer blocks={children} />
              </div>
           )}
         </div>
@@ -344,10 +385,10 @@ const BlockRenderer = ({ block }: { block: any }) => {
       );
       
     case 'image':
-      const src = value.type === 'external' ? value.external.url : value.file?.url;
-      const caption = value.caption?.length ? value.caption[0].plain_text : '';
-      
+      const src = value.type === 'external' ? value.external?.url : value.file?.url;
+      const caption = value.caption?.[0]?.plain_text ?? '';
       if (!src) return null;
+      
       
       return (
         <figure className="my-8">
@@ -369,7 +410,7 @@ const BlockRenderer = ({ block }: { block: any }) => {
       );
       
     case 'video':
-       const videoSrc = value.type === 'external' ? value.external.url : value.file?.url;
+       const videoSrc = value.type === 'external' ? value.external?.url : value.file?.url;
        if (!videoSrc) return null;
        
        const isYouTube = videoSrc.includes('youtube.com') || videoSrc.includes('youtu.be');
@@ -391,7 +432,7 @@ const BlockRenderer = ({ block }: { block: any }) => {
                 </video>
              )}
            </div>
-           {value.caption?.length > 0 && (
+          {(value.caption?.length ?? 0) > 0 && (
             <figcaption className="text-center text-sm text-muted-foreground mt-2 italic">
               <RichTextRenderer text={value.caption} />
             </figcaption>
@@ -400,7 +441,7 @@ const BlockRenderer = ({ block }: { block: any }) => {
        );
     
     case 'audio':
-      const audioSrc = value.type === 'external' ? value.external.url : value.file?.url;
+      const audioSrc = value.type === 'external' ? value.external?.url : value.file?.url;
       if (!audioSrc) return null;
 
       return (
@@ -413,7 +454,7 @@ const BlockRenderer = ({ block }: { block: any }) => {
               <source src={audioSrc} />
               Your browser does not support the audio element.
             </audio>
-            {value.caption?.length > 0 && (
+            {(value.caption?.length ?? 0) > 0 && (
               <figcaption className="text-xs text-muted-foreground mt-2">
                 <RichTextRenderer text={value.caption} />
               </figcaption>
@@ -435,7 +476,7 @@ const BlockRenderer = ({ block }: { block: any }) => {
               allowFullScreen
             />
           </div>
-          {value.caption?.length > 0 && (
+          {(value.caption?.length ?? 0) > 0 && (
             <figcaption className="text-center text-sm text-muted-foreground mt-2 italic">
               <RichTextRenderer text={value.caption} />
             </figcaption>
@@ -463,7 +504,7 @@ const BlockRenderer = ({ block }: { block: any }) => {
                </div>
             </summary>
             <div className="pl-7 mt-1 border-l-2 border-muted ml-2.5">
-               <BlockListRenderer blocks={block.children} />
+              <BlockListRenderer blocks={children} />
             </div>
           </details>
         );
@@ -474,7 +515,7 @@ const BlockRenderer = ({ block }: { block: any }) => {
     case 'column_list':
       return (
         <div className="flex flex-col md:flex-row gap-4 my-4">
-           {block.children?.map((child: any) => (
+           {children.map((child) => (
              <BlockRenderer key={child.id} block={child} />
            ))}
         </div>
@@ -483,13 +524,13 @@ const BlockRenderer = ({ block }: { block: any }) => {
     case 'column':
       return (
         <div className="flex-1 min-w-0">
-           <BlockListRenderer blocks={block.children} />
+           <BlockListRenderer blocks={children} />
         </div>
       );
       
     case 'file':
     case 'pdf':
-       const fileSrc = value.type === 'external' ? value.external.url : value.file?.url;
+       const fileSrc = value.type === 'external' ? value.external?.url : value.file?.url;
        const fileName = value.name || "Download file";
        if (!fileSrc) return null;
        
@@ -505,7 +546,7 @@ const BlockRenderer = ({ block }: { block: any }) => {
            </div>
            <div className="flex-1 truncate">
              <div className="font-medium truncate">{fileName}</div>
-             {value.caption?.length > 0 && (
+            {(value.caption?.length ?? 0) > 0 && (
                <div className="text-xs text-muted-foreground truncate">
                  <RichTextRenderer text={value.caption} />
                </div>
@@ -532,7 +573,7 @@ const BlockRenderer = ({ block }: { block: any }) => {
                <span className="truncate">{new URL(bookmarkUrl).hostname}</span>
              </div>
              <div className="font-medium text-primary mb-1 break-words">
-                {value.caption?.length > 0 ? <RichTextRenderer text={value.caption} /> : bookmarkUrl}
+               {(value.caption?.length ?? 0) > 0 ? <RichTextRenderer text={value.caption} /> : bookmarkUrl}
              </div>
            </div>
          </a>
@@ -550,13 +591,14 @@ const BlockRenderer = ({ block }: { block: any }) => {
          <div className="my-6 overflow-x-auto rounded-lg border">
            <table className="w-full text-sm text-left">
              <tbody>
-                {block.children?.map((rowBlock: any, rowIndex: number) => {
+               {children.map((rowBlock, rowIndex) => {
                    if (rowBlock.type !== 'table_row') return null;
-                   const cells = rowBlock.table_row.cells;
+                  const rowValue = rowBlock[rowBlock.type] as { cells?: NotionRichText[][] };
+                  const cells = rowValue.cells;
                    
                    return (
                      <tr key={rowBlock.id} className="border-b last:border-0 hover:bg-muted/30 transition-colors">
-                        {cells?.map((cell: any[], cellIndex: number) => {
+                       {cells?.map((cell, cellIndex) => {
                           const isHeader = (value.has_column_header && rowIndex === 0) || (value.has_row_header && cellIndex === 0);
                           const CellTag = isHeader ? 'th' : 'td';
                           
@@ -581,7 +623,7 @@ const BlockRenderer = ({ block }: { block: any }) => {
        );
 
     case 'synced_block':
-      return <BlockListRenderer blocks={block.children} />;
+      return <BlockListRenderer blocks={children} />;
     
     case 'link_to_page':
       // Simplified rendering for link_to_page
@@ -650,7 +692,10 @@ export default function BlogPostContent({ post }: BlogPostContentProps) {
   const { fontSize, contrast } = useAccessibility();
 
   // Memoize blocks to prevent unnecessary re-renders
-  const blocks = React.useMemo(() => post.content || [], [post.content]);
+  const blocks = React.useMemo<NotionBlockNode[]>(
+    () => (post.content ?? []) as NotionBlockNode[],
+    [post.content]
+  );
 
   return (
     <BlogPostContext.Provider value={{ post, blocks }}>
