@@ -5,6 +5,8 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { BlogPost } from '@/lib/notion';
 import { useAccessibility } from '@/context/AccessibilityContext';
+import { useLocale } from '@/context/LocaleContext';
+import { getDictionary } from '@/lib/i18n';
 import { cn } from '@/lib/utils';
 import { 
   ChevronRight, 
@@ -690,6 +692,8 @@ const BlockRenderer = ({ block }: { block: NotionBlockNode }) => {
 
 export default function BlogPostContent({ post }: BlogPostContentProps) {
   const { fontSize, contrast } = useAccessibility();
+  const { locale } = useLocale();
+  const t = getDictionary(locale);
 
   // Memoize blocks to prevent unnecessary re-renders
   const blocks = React.useMemo<NotionBlockNode[]>(
@@ -706,9 +710,9 @@ export default function BlogPostContent({ post }: BlogPostContentProps) {
       )}>
         {/* Article Header */}
         <header className="mb-8 not-prose">
-          <Link href="/" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-primary mb-6 transition-colors">
+          <Link href="/blog" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-primary mb-6 transition-colors">
             <Home className="w-4 h-4" />
-            <span>Back to Home</span>
+            <span>{t.backToBlog || t.blog}</span>
           </Link>
           <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight mb-4">{post.title}</h1>
           <div className="flex flex-wrap gap-4 text-muted-foreground text-sm mb-6 items-center">
