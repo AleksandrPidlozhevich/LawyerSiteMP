@@ -3,8 +3,8 @@ import "./globals.css";
 import { ThemeProvider } from "next-themes";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { LocaleProvider } from "@/context/LocaleContext";
-import { cookies } from 'next/headers';
-import { getDictionary, parseLocale } from "@/lib/i18n";
+import { cookies, headers } from 'next/headers';
+import { getDictionary, resolveLocale } from "@/lib/i18n";
 import { Suspense } from "react";
 import YandexMetrika from "../components/YandexMetrika";
 import GoogleAnalytics from "../components/GoogleAnalytics";
@@ -12,7 +12,8 @@ import GoogleTagManager from "../components/GoogleTagManager";
 
 export async function generateMetadata(): Promise<Metadata> {
     const cookieStore = await cookies();
-    const locale = parseLocale(cookieStore.get('NEXT_LOCALE')?.value);
+    const headerList = await headers();
+    const locale = resolveLocale(cookieStore.get('NEXT_LOCALE')?.value, headerList.get('accept-language'));
     const t = getDictionary(locale);
 
     return {
@@ -38,7 +39,8 @@ import AppLayout from "../components/AppLayout";
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
     const cookieStore = await cookies();
-    const locale = parseLocale(cookieStore.get('NEXT_LOCALE')?.value);
+    const headerList = await headers();
+    const locale = resolveLocale(cookieStore.get('NEXT_LOCALE')?.value, headerList.get('accept-language'));
 
     return (
         <html lang={locale} suppressHydrationWarning>

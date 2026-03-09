@@ -1,11 +1,12 @@
 import Link from 'next/link';
 import { FileQuestion, Home } from 'lucide-react';
-import { cookies } from 'next/headers';
-import { getDictionary, parseLocale } from '@/lib/i18n';
+import { cookies, headers } from 'next/headers';
+import { getDictionary, resolveLocale } from '@/lib/i18n';
 
 export default async function NotFound() {
   const cookieStore = await cookies();
-  const locale = parseLocale(cookieStore.get('NEXT_LOCALE')?.value);
+  const headerList = await headers();
+  const locale = resolveLocale(cookieStore.get('NEXT_LOCALE')?.value, headerList.get('accept-language'));
   const t = getDictionary(locale);
 
   return (

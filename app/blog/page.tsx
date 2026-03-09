@@ -1,14 +1,15 @@
 import { getBlogPosts } from '@/lib/notion';
 import { Metadata } from 'next';
 import BlogList from '@/components/BlogList';
-import { cookies } from 'next/headers';
-import { getDictionary, parseLocale } from '@/lib/i18n';
+import { cookies, headers } from 'next/headers';
+import { getDictionary, resolveLocale } from '@/lib/i18n';
 
 const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://pidlozhevich.by';
 
 export async function generateMetadata(): Promise<Metadata> {
   const cookieStore = await cookies();
-  const locale = parseLocale(cookieStore.get('NEXT_LOCALE')?.value);
+  const headerList = await headers();
+  const locale = resolveLocale(cookieStore.get('NEXT_LOCALE')?.value, headerList.get('accept-language'));
   const t = getDictionary(locale);
 
   return {
@@ -20,7 +21,8 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function BlogPage() {
   const posts = await getBlogPosts();
   const cookieStore = await cookies();
-  const locale = parseLocale(cookieStore.get('NEXT_LOCALE')?.value);
+  const headerList = await headers();
+  const locale = resolveLocale(cookieStore.get('NEXT_LOCALE')?.value, headerList.get('accept-language'));
   const t = getDictionary(locale);
 
   const breadcrumbJsonLd = {
