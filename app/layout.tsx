@@ -1,7 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { ThemeProvider } from "next-themes";
-import { SpeedInsights } from "@vercel/speed-insights/next";
 import { LocaleProvider } from "@/context/LocaleContext";
 import { cookies, headers } from 'next/headers';
 import { getDictionary, resolveLocale } from "@/lib/i18n";
@@ -51,7 +50,6 @@ export default async function RootLayout({ children }: { children: React.ReactNo
                     <AppLayout>{children}</AppLayout>
                 </AccessibilityProvider>
             </LocaleProvider>
-            <SpeedInsights />
             <Suspense fallback={null}>
                 <YandexMetrika />
                 <GoogleAnalytics />
