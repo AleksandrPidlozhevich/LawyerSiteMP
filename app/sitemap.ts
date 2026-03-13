@@ -1,7 +1,8 @@
 import { MetadataRoute } from 'next';
 import { getBlogPosts } from '@/lib/notion';
+import { getBaseUrl } from '@/lib/i18n';
 
-const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://pidlozhevich.by';
+const BASE_URL = getBaseUrl();
 const LOCALES = ['ru', 'en', 'by'] as const;
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {

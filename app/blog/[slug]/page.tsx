@@ -3,9 +3,9 @@ import { notFound } from 'next/navigation';
 import { Metadata } from 'next';
 import BlogPostContent from '@/components/BlogPostContent';
 import { cookies, headers } from 'next/headers';
-import { getDictionary, resolveLocale } from '@/lib/i18n';
+import { getBaseUrl, getDictionary, resolveLocale } from '@/lib/i18n';
 
-const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://pidlozhevich.by';
+const BASE_URL = getBaseUrl();
 
 type Props = {
   params: Promise<{ slug: string }>;

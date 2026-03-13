@@ -61,3 +61,16 @@ export const resolveLocale = (
 };
 
 export const getDictionary = (locale: Locale) => dictionaries[locale];
+
+export const getBaseUrl = (): string => {
+  const fallback = 'https://pidlozhevich.by';
+  const raw = (process.env.NEXT_PUBLIC_SITE_URL || fallback).trim();
+  const sanitized = raw.replace(/[)\]\s]+$/g, '');
+
+  try {
+    const url = new URL(sanitized);
+    return `${url.protocol}//${url.host}`;
+  } catch {
+    return fallback;
+  }
+};

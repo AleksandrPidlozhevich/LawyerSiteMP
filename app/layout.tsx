@@ -3,7 +3,7 @@ import "./globals.css";
 import { ThemeProvider } from "next-themes";
 import { LocaleProvider } from "@/context/LocaleContext";
 import { cookies, headers } from 'next/headers';
-import { getDictionary, resolveLocale } from "@/lib/i18n";
+import { getBaseUrl, getDictionary, resolveLocale } from "@/lib/i18n";
 import { Suspense } from "react";
 import YandexMetrika from "../components/YandexMetrika";
 import GoogleAnalytics from "../components/GoogleAnalytics";
@@ -14,7 +14,7 @@ export async function generateMetadata(): Promise<Metadata> {
     const headerList = await headers();
     const locale = resolveLocale(cookieStore.get('NEXT_LOCALE')?.value, headerList.get('accept-language'));
     const t = getDictionary(locale);
-    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://pidlozhevich.by';
+    const baseUrl = getBaseUrl();
     const canonicalUrl = `${baseUrl}?lang=${locale}`;
     const ogImage = '/PidlozhevichM.png';
 

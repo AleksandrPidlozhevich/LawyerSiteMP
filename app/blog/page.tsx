@@ -2,9 +2,9 @@ import { getBlogPosts } from '@/lib/notion';
 import { Metadata } from 'next';
 import BlogList from '@/components/BlogList';
 import { cookies, headers } from 'next/headers';
-import { getDictionary, resolveLocale } from '@/lib/i18n';
+import { getBaseUrl, getDictionary, resolveLocale } from '@/lib/i18n';
 
-const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://pidlozhevich.by';
+const BASE_URL = getBaseUrl();
 
 export async function generateMetadata(): Promise<Metadata> {
   const cookieStore = await cookies();
