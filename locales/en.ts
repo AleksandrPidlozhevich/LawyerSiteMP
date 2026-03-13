@@ -148,8 +148,8 @@ export const en = {
     footerCopyright: "Lawyer Mykolai Pidlozhevich. All rights reserved.",
 
     // Metadata
-    metaTitle: "Lawyer Mykolai Pidlozhevich | Legal Assistance",
-    metaDescription: "Book a consultation with lawyer Pidlozhevich.",
+    metaTitle: "Lawyer in Minsk | Mykolai Pidlozhevich | Legal Services",
+    metaDescription: "Professional legal assistance by a lawyer in Minsk. Court representation, business legal support, and protection of citizens’ interests. Experience and professionalism.",
     siteName: "Lawyer Pidlozhevich",
 
     // Blog

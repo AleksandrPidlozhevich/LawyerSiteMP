@@ -14,10 +14,48 @@ export async function generateMetadata(): Promise<Metadata> {
     const headerList = await headers();
     const locale = resolveLocale(cookieStore.get('NEXT_LOCALE')?.value, headerList.get('accept-language'));
     const t = getDictionary(locale);
+    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://pidlozhevich.by';
+    const canonicalUrl = `${baseUrl}?lang=${locale}`;
+    const ogImage = '/PidlozhevichM.png';
 
     return {
         title: t.metaTitle,
         description: t.metaDescription,
+        metadataBase: new URL(baseUrl),
+        alternates: {
+            canonical: canonicalUrl,
+            languages: {
+                ru: `${baseUrl}?lang=ru`,
+                en: `${baseUrl}?lang=en`,
+                be: `${baseUrl}?lang=by`,
+                'x-default': baseUrl,
+            },
+        },
+        openGraph: {
+            type: 'website',
+            url: canonicalUrl,
+            title: t.metaTitle,
+            description: t.metaDescription,
+            siteName: t.siteName,
+            images: [
+                {
+                    url: ogImage,
+                    width: 1200,
+                    height: 630,
+                    alt: t.metaTitle,
+                },
+            ],
+        },
+        twitter: {
+            card: 'summary_large_image',
+            title: t.metaTitle,
+            description: t.metaDescription,
+            images: [ogImage],
+        },
+        icons: {
+            icon: '/favicon.ico',
+            apple: '/apple-touch-icon.png',
+        },
     };
 }
 
