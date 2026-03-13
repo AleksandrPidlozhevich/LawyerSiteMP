@@ -26,9 +26,24 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     };
   }
 
+  const titleFull = `${post.title} | ${t.siteName}`;
+  const descriptionFull = post.excerpt || t.blogMetaDescription;
+  const title = titleFull.length > 60 ? `${titleFull.slice(0, 57)}...` : titleFull;
+  const description = descriptionFull.length > 160 ? `${descriptionFull.slice(0, 157)}...` : descriptionFull;
+  const canonical = `${BASE_URL}/blog/${post.slug}?lang=${locale}`;
+
   return {
-    title: `${post.title} | ${t.siteName}`,
-    description: post.excerpt,
+    title,
+    description,
+    alternates: {
+      canonical: canonical,
+      languages: {
+        ru: `${BASE_URL}/blog/${post.slug}?lang=ru`,
+        en: `${BASE_URL}/blog/${post.slug}?lang=en`,
+        be: `${BASE_URL}/blog/${post.slug}?lang=by`,
+        'x-default': `${BASE_URL}/blog/${post.slug}`,
+      },
+    },
   };
 }
 

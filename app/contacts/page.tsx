@@ -11,9 +11,24 @@ export async function generateMetadata(): Promise<Metadata> {
   const locale = resolveLocale(cookieStore.get('NEXT_LOCALE')?.value, headerList.get('accept-language'));
   const t = getDictionary(locale);
 
+  const titleFull = t.contactsMetaTitle;
+  const descriptionFull = t.contactsMetaDescription;
+  const title = titleFull.length > 60 ? `${titleFull.slice(0, 57)}...` : titleFull;
+  const description = descriptionFull.length > 160 ? `${descriptionFull.slice(0, 157)}...` : descriptionFull;
+  const canonical = `${BASE_URL}/contacts?lang=${locale}`;
+
   return {
-    title: `${t.contactsTitle} | ${t.siteName}`,
-    description: t.contactsSubtitle,
+    title,
+    description,
+    alternates: {
+      canonical: canonical,
+      languages: {
+        ru: `${BASE_URL}/contacts?lang=ru`,
+        en: `${BASE_URL}/contacts?lang=en`,
+        be: `${BASE_URL}/contacts?lang=by`,
+        'x-default': `${BASE_URL}/contacts`,
+      },
+    },
   };
 }
 

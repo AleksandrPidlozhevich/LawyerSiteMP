@@ -18,10 +18,24 @@ export async function generateMetadata(): Promise<Metadata> {
   };
   
   const title = privacyTitles[locale] || privacyTitles['ru'];
+  const titleFull = `${title} | ${t.siteName}`;
+  const descriptionFull = `${title} — ${t.siteName}. ${t.privacyMetaDescription}`;
+  const titleFinal = titleFull.length > 60 ? `${titleFull.slice(0, 57)}...` : titleFull;
+  const descriptionFinal = descriptionFull.length > 160 ? `${descriptionFull.slice(0, 157)}...` : descriptionFull;
+  const canonical = `${BASE_URL}/privacy?lang=${locale}`;
 
   return {
-    title: `${title} | ${t.siteName}`,
-    description: `${title} - ${t.siteName}`,
+    title: titleFinal,
+    description: descriptionFinal,
+    alternates: {
+      canonical: canonical,
+      languages: {
+        ru: `${BASE_URL}/privacy?lang=ru`,
+        en: `${BASE_URL}/privacy?lang=en`,
+        be: `${BASE_URL}/privacy?lang=by`,
+        'x-default': `${BASE_URL}/privacy`,
+      },
+    },
   };
 }
 
