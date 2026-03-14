@@ -1,6 +1,5 @@
 "use client";
 
-import { motion } from "framer-motion";
 import { useEffect, useMemo, useState } from "react";
 import {
   Trophy,
@@ -323,26 +322,16 @@ export default function HomeClient() {
                 {t.professionalAssistance}
               </p>
 
-              <motion.button
+              <button
                 type="button"
                 onClick={() => setShowCallbackModal(true)}
-                whileHover={{
-                  scale: 1.05,
-                  boxShadow: "0 10px 25px -5px rgba(59, 130, 246, 0.4)",
-                }}
-                whileTap={{ scale: 0.95 }}
                 className="px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-full shadow-lg transition-all relative overflow-hidden"
               >
                 <span className="relative z-10">{t.orderCallback}</span>
-              </motion.button>
+              </button>
             </div>
 
-            <motion.div
-              initial={{ opacity: 0, x: 40 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8, delay: 0.2 }}
-              className="relative order-1 lg:order-2"
-            >
+            <div className="relative order-1 lg:order-2">
               <div className="relative w-full max-w-md mx-auto lg:max-w-none">
                 <div className="relative aspect-[4/5] sm:aspect-[3/4] w-full max-h-[420px] sm:max-h-none">
                   <Image
@@ -357,25 +346,15 @@ export default function HomeClient() {
                   <div className="absolute -inset-4 bg-gradient-to-r from-blue-600/20 to-purple-600/20 rounded-2xl blur-xl -z-10" />
                 </div>
               </div>
-            </motion.div>
+            </div>
           </div>
 
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.6, duration: 0.8 }}
-            className="reveal grid grid-cols-2 md:grid-cols-4 gap-6 mb-20"
-            data-reveal
-          >
+          <div className="reveal grid grid-cols-2 md:grid-cols-4 gap-6 mb-20" data-reveal>
             {achievements.map((achievement, index) => {
               const IconComponent = achievement.icon;
               return (
-                <motion.div
+                <div
                   key={index}
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: 0.8 + index * 0.1, duration: 0.5 }}
-                  whileHover={{ scale: 1.02 }}
                   className="card-base bg-card/90 backdrop-blur-sm border border-border p-6 transition-all duration-300"
                 >
                   <div className="flex flex-col items-center space-y-3">
@@ -389,18 +368,12 @@ export default function HomeClient() {
                       {achievement.label}
                     </div>
                   </div>
-                </motion.div>
+                </div>
               );
             })}
-          </motion.div>
+          </div>
 
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.7, duration: 0.6 }}
-            className="reveal text-center mb-6"
-            data-reveal
-          >
+          <div className="reveal text-center mb-6" data-reveal>
             {/* Membership line: MGKA link, dot, and logo */}
             <p className="text-muted-foreground max-w-4xl mx-auto text-sm sm:text-base leading-relaxed">
               {t.membershipPrefix}
@@ -445,19 +418,13 @@ export default function HomeClient() {
                 </svg>
               </span>
             </p>
-          </motion.div>
+          </div>
 
           <div className="reveal" data-reveal>
             <WorkingStepper className="mb-20" />
           </div>
 
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.9, duration: 0.8 }}
-            className="reveal mb-20"
-            data-reveal
-          >
+          <div className="reveal mb-20" data-reveal>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <div className="card-base bg-card/90 backdrop-blur-sm border border-border p-6">
                 <h2 className="text-xl sm:text-2xl font-bold text-foreground mb-3">
@@ -526,15 +493,9 @@ export default function HomeClient() {
                 </details>
               </div>
             </div>
-          </motion.div>
+          </div>
 
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.75, duration: 0.8 }}
-            className="reveal mb-20"
-            data-reveal
-          >
+          <div className="reveal mb-20" data-reveal>
             <div className="text-center mb-10">
               <h2 className="text-2xl sm:text-3xl font-bold text-foreground mb-3">
                 {t.practiceAreasTitle}
@@ -549,12 +510,8 @@ export default function HomeClient() {
                 const IconComponent = area.icon;
 
                 return (
-                <motion.div
+                <div
                     key={index}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.85 + index * 0.06, duration: 0.45 }}
-                    whileHover={{ scale: 1.02 }}
                   className="card-base bg-card/90 backdrop-blur-sm border border-border p-6 transition-all duration-300"
                   >
                     <div className="flex items-start gap-4">
@@ -581,11 +538,11 @@ export default function HomeClient() {
                         </details>
                       </div>
                     </div>
-                  </motion.div>
+                  </div>
                 );
               })}
             </div>
-          </motion.div>
+          </div>
         </div>
 
         {showCallbackModal && <CallbackModal onClose={() => setShowCallbackModal(false)} />}

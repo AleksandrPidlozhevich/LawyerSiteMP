@@ -15,7 +15,7 @@ export async function generateMetadata(): Promise<Metadata> {
     const locale = resolveLocale(cookieStore.get('NEXT_LOCALE')?.value, headerList.get('accept-language'));
     const t = getDictionary(locale);
     const baseUrl = getBaseUrl();
-    const canonicalUrl = `${baseUrl}?lang=${locale}`;
+    const canonicalUrl = baseUrl;
     const ogImage = '/PidlozhevichM.png';
 
     return {
@@ -78,6 +78,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     const cookieStore = await cookies();
     const headerList = await headers();
     const locale = resolveLocale(cookieStore.get('NEXT_LOCALE')?.value, headerList.get('accept-language'));
+    const hasGtm = Boolean(process.env.NEXT_PUBLIC_GTM_ID);
 
     return (
         <html lang={locale} suppressHydrationWarning>
@@ -90,8 +91,8 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             </LocaleProvider>
             <Suspense fallback={null}>
                 <YandexMetrika />
-                <GoogleAnalytics />
                 <GoogleTagManager />
+                {!hasGtm ? <GoogleAnalytics /> : null}
             </Suspense>
         </ThemeProvider>
         </body>

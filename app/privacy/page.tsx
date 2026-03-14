@@ -22,7 +22,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const descriptionFull = `${title} — ${t.siteName}. ${t.privacyMetaDescription}`;
   const titleFinal = titleFull.length > 60 ? `${titleFull.slice(0, 57)}...` : titleFull;
   const descriptionFinal = descriptionFull.length > 160 ? `${descriptionFull.slice(0, 157)}...` : descriptionFull;
-  const canonical = `${BASE_URL}/privacy?lang=${locale}`;
+  const canonical = `${BASE_URL}/privacy`;
 
   return {
     title: titleFinal,

@@ -16,7 +16,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const descriptionFull = t.blogMetaDescription;
   const title = titleFull.length > 60 ? `${titleFull.slice(0, 57)}...` : titleFull;
   const description = descriptionFull.length > 160 ? `${descriptionFull.slice(0, 157)}...` : descriptionFull;
-  const canonical = `${BASE_URL}/blog?lang=${locale}`;
+  const canonical = `${BASE_URL}/blog`;
 
   return {
     title,
