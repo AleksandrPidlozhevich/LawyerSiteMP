@@ -53,25 +53,6 @@ const A11Y_STYLES = `
     --ring: oklch(0.2 0 0);
 }
 
-.skip-link {
-    position: absolute;
-    top: -9999px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: #000;
-    color: #fff;
-    padding: 1rem;
-    z-index: 9999;
-    text-decoration: none;
-    font-weight: bold;
-    border-radius: 0 0 8px 8px;
-}
-
-.skip-link:focus {
-    top: 0;
-    outline: 3px solid #fbbf24;
-}
-
 .a11y {
     font-size: 20px;
 }

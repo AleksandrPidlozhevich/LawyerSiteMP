@@ -15,12 +15,9 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     const t = getDictionary(locale);
     const pathname = usePathname();
 
-    const skipLabel = locale === 'ru' ? 'Перейти к основному контенту' : locale === 'en' ? 'Skip to main content' : 'Перайсці да асноўнага зместу';
-
     if (isEnabled) {
         return (
             <>
-                <a href="#main-content" className="skip-link">{skipLabel}</a>
                 <AccessibilityControls />
                 <nav className="border-b-2 border-current p-4" aria-label={t.menuTitle}>
                     <ul className="container mx-auto flex flex-wrap gap-6 text-lg font-bold">
@@ -61,7 +58,6 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
     return (
         <>
-            <a href="#main-content" className="skip-link">{skipLabel}</a>
             <Header />
             <main id="main-content" className="container mx-auto p-4 md:p-6 flex-1" tabIndex={-1}>{children}</main>
             <Footer />
