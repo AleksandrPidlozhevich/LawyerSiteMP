@@ -309,29 +309,19 @@ export default function HomeClient() {
 
       <section className="flex flex-col items-center py-16 px-4 relative z-10">
         <div className="max-w-7xl w-full">
-          <div className="reveal grid lg:grid-cols-2 gap-12 items-center mb-16" data-reveal>
-            <motion.div
-              initial={{ opacity: 0, x: -40 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8 }}
-              className="text-center lg:text-left order-2 lg:order-1"
-            >
-              <motion.h1 className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-bold mb-6 text-center lg:text-left leading-tight">
+          <div className="grid lg:grid-cols-2 gap-12 items-center mb-16">
+            <div className="text-center lg:text-left order-2 lg:order-1">
+              <h1 className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-bold mb-6 text-center lg:text-left leading-tight">
                 <div>{t.your}</div>
                 <div className="text-blue-600 h-[1.2em] relative">
                   <FlipWords words={t.flipWords} duration={3500} />
                 </div>
                 <div>{t.lawyer}</div>
-              </motion.h1>
+              </h1>
 
-              <motion.p
-                className="text-lg mb-8 whitespace-pre-line text-muted-foreground"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.3, duration: 0.8 }}
-              >
+              <p className="text-lg mb-8 whitespace-pre-line text-muted-foreground">
                 {t.professionalAssistance}
-              </motion.p>
+              </p>
 
               <motion.button
                 type="button"
@@ -345,7 +335,7 @@ export default function HomeClient() {
               >
                 <span className="relative z-10">{t.orderCallback}</span>
               </motion.button>
-            </motion.div>
+            </div>
 
             <motion.div
               initial={{ opacity: 0, x: 40 }}
