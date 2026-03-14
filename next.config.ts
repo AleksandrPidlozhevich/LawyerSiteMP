@@ -38,6 +38,7 @@ const nextConfig: NextConfig = {
   compress: true,
   poweredByHeader: false,
   experimental: {
+    optimizeCss: true,
     optimizePackageImports: ['lucide-react', 'framer-motion'],
   },
 };
