@@ -8,7 +8,7 @@ export default function Footer() {
     const t = getDictionary(locale);
 
     return (
-        <footer role="contentinfo" className="bg-muted text-muted-foreground text-center py-6 mt-10 transition-colors">
+        <footer role="contentinfo" className="bg-muted text-foreground text-center py-6 mt-10 transition-colors">
             <div className="container mx-auto px-4">
                  <p>© {new Date().getFullYear()} {t.footerCopyright}</p>
             </div>

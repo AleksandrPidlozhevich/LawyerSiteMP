@@ -39,6 +39,7 @@ const nextConfig: NextConfig = {
   poweredByHeader: false,
   experimental: {
     optimizeCss: true,
+    inlineCss: true,
     optimizePackageImports: ['lucide-react', 'framer-motion'],
   },
 };
