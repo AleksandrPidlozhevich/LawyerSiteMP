@@ -71,7 +71,8 @@ vi.mock('next/image', () => ({
 
 // Mock dynamic imports
 vi.mock('next/dynamic', () => ({
-  default: () => {
+  default: (loader: () => Promise<unknown>) => {
+    const loaderSource = loader.toString();
     const DynamicComponent = (props: Record<string, unknown>) => {
       if (props.onClose) {
         return (
@@ -81,7 +82,13 @@ vi.mock('next/dynamic', () => ({
           </div>
         );
       }
-      return <div data-testid="waves">Waves</div>;
+      if (loaderSource.includes('./WorkingStepper')) {
+        return <div data-testid="working-stepper">WorkingStepper</div>;
+      }
+      if (loaderSource.includes('./Waves')) {
+        return <div data-testid="waves">Waves</div>;
+      }
+      return <div data-testid="working-stepper">WorkingStepper</div>;
     };
     return DynamicComponent;
   }

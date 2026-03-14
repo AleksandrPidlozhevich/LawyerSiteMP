@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   Trophy,
   Users,
@@ -23,7 +23,6 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import dynamic from "next/dynamic";
-import WorkingStepper from "./WorkingStepper";
 import { FlipWords } from "@/components/ui/flip-words";
 import { useLocale } from "@/context/LocaleContext";
 import { useAccessibility } from "@/context/AccessibilityContext";
@@ -32,18 +31,21 @@ import { getDictionary } from "@/lib/i18n";
 // Dynamic imports: non-SSR components for performance
 const Waves = dynamic(() => import("./Waves"), { ssr: false });
 const CallbackModal = dynamic(() => import("./CallbackModal"), { ssr: false });
+const WorkingStepper = dynamic(() => import("./WorkingStepper"), { ssr: false });
 
 // Root component: renders the client-facing homepage
 export default function HomeClient() {
   // UI state: controls callback modal visibility
   const [showCallbackModal, setShowCallbackModal] = useState(false);
-  // UI state: toggles animated waves background
   const [showWaves, setShowWaves] = useState(false);
+  const [showWorkingStepper, setShowWorkingStepper] = useState(false);
+  const workingStepperAnchorRef = useRef<HTMLDivElement | null>(null);
 
   // Localization: select translation dictionary by current locale
   const { locale } = useLocale();
   const t = getDictionary(locale);
   const { isEnabled } = useAccessibility();
+  const shouldRenderWorkingStepper = isEnabled || showWorkingStepper;
 
   // Progressive enhancement: enable waves when idle or after timeout
   useEffect(() => {
@@ -97,6 +99,33 @@ export default function HomeClient() {
     );
 
     elements.forEach((element) => observer.observe(element));
+    return () => observer.disconnect();
+  }, [isEnabled]);
+
+  useEffect(() => {
+    if (isEnabled) return;
+
+    const anchor = workingStepperAnchorRef.current;
+    if (!anchor || !("IntersectionObserver" in window)) {
+      const timeoutId = window.setTimeout(() => {
+        setShowWorkingStepper(true);
+      }, 0);
+      return () => window.clearTimeout(timeoutId);
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            setShowWorkingStepper(true);
+            observer.disconnect();
+          }
+        });
+      },
+      { rootMargin: "250px 0px", threshold: 0.01 },
+    );
+
+    observer.observe(anchor);
     return () => observer.disconnect();
   }, [isEnabled]);
 
@@ -273,8 +302,8 @@ export default function HomeClient() {
            </div>
         </section>
 
-        <section aria-labelledby="working-stepper-heading">
-            <WorkingStepper />
+        <section aria-labelledby="working-stepper-heading" ref={workingStepperAnchorRef}>
+          {shouldRenderWorkingStepper ? <WorkingStepper /> : <div className="mb-12" />}
         </section>
 
         {showCallbackModal && (
@@ -420,8 +449,8 @@ export default function HomeClient() {
             </p>
           </div>
 
-          <div className="reveal" data-reveal>
-            <WorkingStepper className="mb-20" />
+          <div className="reveal" data-reveal ref={workingStepperAnchorRef}>
+            {shouldRenderWorkingStepper ? <WorkingStepper className="mb-20" /> : <div className="mb-20" />}
           </div>
 
           <div className="reveal mb-20" data-reveal>
