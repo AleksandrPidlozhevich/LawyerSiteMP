@@ -270,12 +270,20 @@ export default function HomeClient() {
         <section>
            <h1 className="text-4xl font-bold mb-6">{t.your} {t.flipWords[0]} {t.lawyer}</h1>
            <p className="text-xl mb-6">{t.professionalAssistance}</p>
-           <button 
-             onClick={() => setShowCallbackModal(true)}
-             className="px-8 py-4 bg-primary text-primary-foreground font-bold border-2 border-primary hover:bg-secondary hover:text-secondary-foreground text-xl rounded-none transition-colors"
-           >
-             {t.orderCallback}
-           </button>
+           <div className="flex flex-col sm:flex-row gap-4">
+             <button 
+               onClick={() => setShowCallbackModal(true)}
+               className="px-8 py-4 bg-primary text-primary-foreground font-bold border-2 border-primary hover:bg-secondary hover:text-secondary-foreground text-xl rounded-none transition-colors"
+             >
+               {t.orderCallback}
+             </button>
+             <a 
+               href="tel:+375297798827"
+               className="px-8 py-4 bg-primary text-primary-foreground font-bold border-2 border-primary hover:bg-secondary hover:text-secondary-foreground text-xl rounded-none transition-colors text-center"
+             >
+               {t.callNow}
+             </a>
+           </div>
         </section>
 
         <section aria-labelledby="achievements-heading">
