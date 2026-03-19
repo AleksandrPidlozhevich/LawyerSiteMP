@@ -113,6 +113,7 @@ export const en = {
     
     //CallbackModal
     orderCallback: "Order a Callback",
+    callNow: "Call Now",
     requestSent: "Request Sent!",
     willContactYou: "We will contact you shortly at",
     close: "Close",

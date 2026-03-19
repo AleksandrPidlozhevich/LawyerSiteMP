@@ -114,6 +114,7 @@ export const ru = {
     
     //CallbackModal
     orderCallback: "Заказать обратный звонок",
+    callNow: "Позвонить",
     requestSent: "Заявка отправлена!",
     willContactYou: "Мы свяжемся с вами в ближайшее время по номеру",
     close: "Закрыть",

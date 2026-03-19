@@ -351,13 +351,23 @@ export default function HomeClient() {
                 {t.professionalAssistance}
               </p>
 
-              <button
-                type="button"
-                onClick={() => setShowCallbackModal(true)}
-                className="px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-full shadow-lg transition-all relative overflow-hidden"
-              >
-                <span className="relative z-10">{t.orderCallback}</span>
-              </button>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+                <button
+                  type="button"
+                  onClick={() => setShowCallbackModal(true)}
+                  className="px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-full shadow-lg transition-all duration-300 relative overflow-hidden hover:shadow-[0_0_20px_rgba(59,130,246,0.5)] hover:-translate-y-1 active:translate-y-0 group"
+                >
+                  <div className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/30 to-transparent -translate-x-full group-hover:animate-shimmer skew-x-[-20deg]" />
+                  <span className="relative z-10">{t.orderCallback}</span>
+                </button>
+                <a
+                  href="tel:+375297798827"
+                  className="px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-full shadow-lg transition-all duration-300 relative overflow-hidden text-center hover:shadow-[0_0_20px_rgba(147,51,234,0.5)] hover:-translate-y-1 active:translate-y-0 group"
+                >
+                  <div className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/30 to-transparent -translate-x-full group-hover:animate-shimmer skew-x-[-20deg]" />
+                  <span className="relative z-10">{t.callNow}</span>
+                </a>
+              </div>
             </div>
 
             <div className="relative order-1 lg:order-2">

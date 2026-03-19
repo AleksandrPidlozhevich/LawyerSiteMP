@@ -112,6 +112,7 @@ export const by = {
     
     //CallbackModal
     orderCallback: "Замовіць зваротны званок",
+    callNow: "Патэлефанаваць",
     requestSent: "Заяўка адпраўлена!",
     willContactYou: "Мы звяжамся з вамі ў бліжэйшы час па нумары",
     close: "Зачыніць",
