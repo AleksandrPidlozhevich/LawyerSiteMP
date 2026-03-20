@@ -41,11 +41,15 @@ export default function HomeClient() {
   const [showWorkingStepper, setShowWorkingStepper] = useState(false);
   const workingStepperAnchorRef = useRef<HTMLDivElement | null>(null);
 
+  const [showPracticeAreas, setShowPracticeAreas] = useState(false);
+  const practiceAreasAnchorRef = useRef<HTMLDivElement | null>(null);
+
   // Localization: select translation dictionary by current locale
   const { locale } = useLocale();
   const t = getDictionary(locale);
   const { isEnabled } = useAccessibility();
   const shouldRenderWorkingStepper = isEnabled || showWorkingStepper;
+  const shouldRenderPracticeAreas = isEnabled || showPracticeAreas;
 
   // Progressive enhancement: enable waves when idle or after timeout
   useEffect(() => {
@@ -118,6 +122,33 @@ export default function HomeClient() {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
             setShowWorkingStepper(true);
+            observer.disconnect();
+          }
+        });
+      },
+      { rootMargin: "250px 0px", threshold: 0.01 },
+    );
+
+    observer.observe(anchor);
+    return () => observer.disconnect();
+  }, [isEnabled]);
+
+  useEffect(() => {
+    if (isEnabled) return;
+
+    const anchor = practiceAreasAnchorRef.current;
+    if (!anchor || !("IntersectionObserver" in window)) {
+      const timeoutId = window.setTimeout(() => {
+        setShowPracticeAreas(true);
+      }, 0);
+      return () => window.clearTimeout(timeoutId);
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            setShowPracticeAreas(true);
             observer.disconnect();
           }
         });
@@ -273,7 +304,7 @@ export default function HomeClient() {
            <div className="flex flex-col sm:flex-row gap-4">
              <button 
                onClick={() => setShowCallbackModal(true)}
-               className="px-8 py-4 bg-primary text-primary-foreground font-bold border-2 border-primary hover:bg-secondary hover:text-secondary-foreground text-xl rounded-none transition-colors"
+               className="px-8 py-4 bg-primary text-primary-foreground font-bold border-2 border-primary hover:bg-secondary hover:text-secondary-foreground text-xl rounded-none transition-colors text-center"
              >
                {t.orderCallback}
              </button>
@@ -542,7 +573,7 @@ export default function HomeClient() {
             </div>
           </div>
 
-          <div className="reveal mb-20" data-reveal>
+          <div className="reveal mb-20" data-reveal ref={practiceAreasAnchorRef}>
             <div className="text-center mb-10">
               <h2 className="text-2xl sm:text-3xl font-bold text-foreground mb-3">
                 {t.practiceAreasTitle}
@@ -552,43 +583,47 @@ export default function HomeClient() {
               </p>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {practiceAreas.map((area, index) => {
-                const IconComponent = area.icon;
+            {shouldRenderPracticeAreas ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {practiceAreas.map((area, index) => {
+                  const IconComponent = area.icon;
 
-                return (
-                <div
-                    key={index}
-                  className="card-base bg-card/90 backdrop-blur-sm border border-border p-6 transition-all duration-300"
-                  >
-                    <div className="flex items-start gap-4">
-                      <div
-                        className={`p-3 rounded-lg bg-slate-100 dark:bg-slate-800 ${area.color}`}
-                      >
-                        <IconComponent size={22} />
-                      </div>
-                      <div className="flex-1">
-                      <div className="font-semibold text-foreground">{area.title}</div>
-                      <div className="text-sm text-muted-foreground mt-2 line-clamp-3">
-                          {area.preview}
+                  return (
+                    <div
+                      key={index}
+                      className="card-base bg-card/90 backdrop-blur-sm border border-border p-6 transition-all duration-300"
+                    >
+                      <div className="flex items-start gap-4">
+                        <div
+                          className={`p-3 rounded-lg bg-slate-100 dark:bg-slate-800 ${area.color}`}
+                        >
+                          <IconComponent size={22} />
                         </div>
-                        <details className="mt-3">
-                          <summary 
-                            className="cursor-pointer select-none text-sm font-medium text-blue-600 dark:text-blue-400 hover:opacity-80 transition-opacity"
-                            aria-label={t.practiceReadMore}
-                          >
-                            {t.practiceReadMore}
-                          </summary>
-                          <div className="mt-3 text-sm text-muted-foreground whitespace-pre-line">
-                            {area.details}
+                        <div className="flex-1">
+                          <div className="font-semibold text-foreground">{area.title}</div>
+                          <div className="text-sm text-muted-foreground mt-2 line-clamp-3">
+                            {area.preview}
                           </div>
-                        </details>
+                          <details className="mt-3">
+                            <summary 
+                              className="cursor-pointer select-none text-sm font-medium text-blue-600 dark:text-blue-400 hover:opacity-80 transition-opacity"
+                              aria-label={t.practiceReadMore}
+                            >
+                              {t.practiceReadMore}
+                            </summary>
+                            <div className="mt-3 text-sm text-muted-foreground whitespace-pre-line">
+                              {area.details}
+                            </div>
+                          </details>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                );
-              })}
-            </div>
+                  );
+                })}
+              </div>
+            ) : (
+              <div className="min-h-[400px]"></div>
+            )}
           </div>
         </div>
 
