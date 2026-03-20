@@ -473,8 +473,8 @@ export default function HomeClient() {
             </div>
 
             <div className="relative order-1 lg:order-2">
-              <Tilt className="relative w-full max-w-md mx-auto lg:max-w-none" isDisabled={isEnabled} rotation={10}>
-                <div className="relative aspect-[4/5] sm:aspect-[3/4] w-full max-h-[420px] sm:max-h-none rounded-2xl border-[3px] border-cyan-400 shadow-[0_0_15px_rgba(34,211,238,0.6),0_0_30px_rgba(34,211,238,0.4)] overflow-hidden">
+              <div className="relative w-full max-w-md mx-auto lg:max-w-none rounded-2xl bg-gradient-to-r from-blue-500 to-purple-600 p-[3px] shadow-[0_0_15px_rgba(59,130,246,0.35),0_0_20px_rgba(147,51,234,0.3)]">
+                <div className="relative aspect-[4/5] sm:aspect-[3/4] w-full max-h-[420px] sm:max-h-none rounded-[13px] overflow-hidden">
                   <Image
                     src="/PidlozhevichM.png"
                     alt={t.professionalLawyer}
@@ -485,7 +485,7 @@ export default function HomeClient() {
                     sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 40vw"
                   />
                 </div>
-              </Tilt>
+              </div>
             </div>
           </div>
 
