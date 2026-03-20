@@ -24,6 +24,7 @@ import {
 import Image from "next/image";
 import dynamic from "next/dynamic";
 import { FlipWords } from "@/components/ui/flip-words";
+import { Tilt } from "@/components/ui/tilt";
 import { useLocale } from "@/context/LocaleContext";
 import { useAccessibility } from "@/context/AccessibilityContext";
 import { getDictionary } from "@/lib/i18n";
@@ -410,7 +411,7 @@ export default function HomeClient() {
             </div>
 
             <div className="relative order-1 lg:order-2">
-              <div className="relative w-full max-w-md mx-auto lg:max-w-none">
+              <Tilt className="relative w-full max-w-md mx-auto lg:max-w-none" isDisabled={isEnabled} rotation={10}>
                 <div className="relative aspect-[4/5] sm:aspect-[3/4] w-full max-h-[420px] sm:max-h-none">
                   <Image
                     src="/PidlozhevichM.png"
@@ -423,7 +424,7 @@ export default function HomeClient() {
                   />
                   <div className="absolute -inset-4 bg-gradient-to-r from-blue-600/20 to-purple-600/20 rounded-2xl blur-xl -z-10" />
                 </div>
-              </div>
+              </Tilt>
             </div>
           </div>
 
@@ -431,22 +432,23 @@ export default function HomeClient() {
             {achievements.map((achievement, index) => {
               const IconComponent = achievement.icon;
               return (
-                <div
-                  key={index}
-                  className="card-base bg-card/90 backdrop-blur-sm border border-border p-6 transition-all duration-300"
-                >
-                  <div className="flex flex-col items-center space-y-3">
-                    <div
-                      className={`p-3 rounded-lg bg-slate-100 dark:bg-slate-800 ${achievement.color}`}
-                    >
-                      <IconComponent size={24} />
-                    </div>
-                    <div className="text-2xl font-bold text-foreground">{achievement.value}</div>
-                    <div className="text-sm text-muted-foreground text-center">
-                      {achievement.label}
+                <Tilt key={index} isDisabled={isEnabled} rotation={15} className="h-full">
+                  <div
+                    className="card-base h-full bg-card/90 backdrop-blur-sm border border-border p-6 transition-all duration-300"
+                  >
+                    <div className="flex flex-col items-center space-y-3">
+                      <div
+                        className={`p-3 rounded-lg bg-slate-100 dark:bg-slate-800 ${achievement.color}`}
+                      >
+                        <IconComponent size={24} />
+                      </div>
+                      <div className="text-2xl font-bold text-foreground">{achievement.value}</div>
+                      <div className="text-sm text-muted-foreground text-center">
+                        {achievement.label}
+                      </div>
                     </div>
                   </div>
-                </div>
+                </Tilt>
               );
             })}
           </div>
@@ -589,35 +591,34 @@ export default function HomeClient() {
                   const IconComponent = area.icon;
 
                   return (
-                    <div
-                      key={index}
-                      className="card-base bg-card/90 backdrop-blur-sm border border-border p-6 transition-all duration-300"
-                    >
-                      <div className="flex items-start gap-4">
-                        <div
-                          className={`p-3 rounded-lg bg-slate-100 dark:bg-slate-800 ${area.color}`}
-                        >
-                          <IconComponent size={22} />
-                        </div>
-                        <div className="flex-1">
-                          <div className="font-semibold text-foreground">{area.title}</div>
-                          <div className="text-sm text-muted-foreground mt-2 line-clamp-3">
-                            {area.preview}
+                    <Tilt key={index} isDisabled={isEnabled} rotation={10} className="h-full">
+                      <div className="card-base h-full bg-card/90 backdrop-blur-sm border border-border p-6 transition-all duration-300">
+                        <div className="flex items-start gap-4">
+                          <div
+                            className={`p-3 rounded-lg bg-slate-100 dark:bg-slate-800 ${area.color}`}
+                          >
+                            <IconComponent size={22} />
                           </div>
-                          <details className="mt-3">
-                            <summary 
-                              className="cursor-pointer select-none text-sm font-medium text-blue-600 dark:text-blue-400 hover:opacity-80 transition-opacity"
-                              aria-label={t.practiceReadMore}
-                            >
-                              {t.practiceReadMore}
-                            </summary>
-                            <div className="mt-3 text-sm text-muted-foreground whitespace-pre-line">
-                              {area.details}
+                          <div className="flex-1">
+                            <div className="font-semibold text-foreground">{area.title}</div>
+                            <div className="text-sm text-muted-foreground mt-2 line-clamp-3">
+                              {area.preview}
                             </div>
-                          </details>
+                            <details className="mt-3">
+                              <summary 
+                                className="cursor-pointer select-none text-sm font-medium text-blue-600 dark:text-blue-400 hover:opacity-80 transition-opacity"
+                                aria-label={t.practiceReadMore}
+                              >
+                                {t.practiceReadMore}
+                              </summary>
+                              <div className="mt-3 text-sm text-muted-foreground whitespace-pre-line">
+                                {area.details}
+                              </div>
+                            </details>
+                          </div>
                         </div>
                       </div>
-                    </div>
+                    </Tilt>
                   );
                 })}
               </div>
