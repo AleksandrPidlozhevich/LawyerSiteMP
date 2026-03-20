@@ -47,7 +47,7 @@ export default function BlogList({ posts }: BlogListProps) {
                     }
                 });
             },
-            { threshold: 0.2 },
+            { rootMargin: "1700px 0px", threshold: 0.05 },
         );
 
         elements.forEach((element) => observer.observe(element));

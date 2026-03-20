@@ -99,7 +99,7 @@ export default function HomeClient() {
           }
         });
       },
-      { threshold: 0.2 },
+      { rootMargin: "1700px 0px", threshold: 0.05 },
     );
 
     elements.forEach((element) => observer.observe(element));
@@ -153,7 +153,7 @@ export default function HomeClient() {
           }
         });
       },
-      { rootMargin: "1700px 0px", threshold: 0.01 },
+      { rootMargin: "1700px 0px", threshold: 0.01 }
     );
 
     observer.observe(anchor);

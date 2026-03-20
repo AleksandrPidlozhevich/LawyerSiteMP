@@ -80,7 +80,7 @@ export default function ContactsClient() {
                     }
                 });
             },
-            { threshold: 0.2 },
+            { rootMargin: "1700px 0px", threshold: 0.05 },
         );
 
         elements.forEach((element) => observer.observe(element));
@@ -104,7 +104,7 @@ export default function ContactsClient() {
                     }
                 });
             },
-            { threshold: 0.2 },
+            { rootMargin: "1700px 0px", threshold: 0.01 },
         );
 
         targets.forEach((target) => observer.observe(target));
