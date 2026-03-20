@@ -473,8 +473,8 @@ export default function HomeClient() {
             </div>
 
             <div className="relative order-1 lg:order-2">
-              <div className="relative w-full max-w-md mx-auto lg:max-w-none rounded-2xl bg-gradient-to-r from-blue-500 to-purple-600 p-[3px] shadow-[0_0_60px_rgba(59,130,246,0.4),0_0_32px_rgba(147,51,234,0.35)]">
-                <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-blue-500 to-purple-600 blur-[60px] opacity-70" />
+              <div className="relative w-full max-w-md mx-auto lg:max-w-none rounded-2xl bg-gradient-to-r from-blue-500 to-purple-600 p-[3px] shadow-[0_0_22px_rgba(59,130,246,0.28),0_0_30px_rgba(147,51,234,0.24)]">
+                <div className="absolute inset-[1px] rounded-2xl bg-gradient-to-r from-blue-500 to-purple-600 blur-[4px] opacity-65 pointer-events-none" />
                 <div className="relative z-10 aspect-[4/5] sm:aspect-[3/4] w-full max-h-[420px] sm:max-h-none rounded-[13px] overflow-hidden">
                   <Image
                     src="/PidlozhevichM.png"
