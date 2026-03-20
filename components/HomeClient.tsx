@@ -448,21 +448,21 @@ export default function HomeClient() {
                 {t.professionalAssistance}
               </p>
 
-              <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+              <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start w-full max-w-[600px] mx-auto lg:mx-0">
                 <button
                   type="button"
                   onClick={() => setShowCallbackModal(true)}
-                  className="px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-full shadow-lg transition-all duration-300 relative overflow-hidden hover:shadow-[0_0_20px_rgba(59,130,246,0.5)] hover:-translate-y-1 active:translate-y-0 group"
+                  className="p-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-full shadow-lg transition-all duration-300 relative overflow-hidden hover:shadow-[0_0_20px_rgba(59,130,246,0.5)] hover:-translate-y-1 active:translate-y-0 group flex-1 text-center flex items-center justify-center min-h-[60px]"
                 >
                   <div className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/30 to-transparent -translate-x-full group-hover:animate-shimmer skew-x-[-20deg]" />
-                  <span className="relative z-10">{t.orderCallback}</span>
+                  <span className="relative z-10 leading-tight break-words text-sm sm:text-base px-2">{t.orderCallback}</span>
                 </button>
                 <a
                   href="tel:+375297798827"
-                  className="px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-full shadow-lg transition-all duration-300 relative overflow-hidden text-center hover:shadow-[0_0_20px_rgba(147,51,234,0.5)] hover:-translate-y-1 active:translate-y-0 group"
+                  className="p-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-full shadow-lg transition-all duration-300 relative overflow-hidden hover:shadow-[0_0_20px_rgba(147,51,234,0.5)] hover:-translate-y-1 active:translate-y-0 group flex-1 text-center flex items-center justify-center min-h-[60px]"
                 >
                   <div className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/30 to-transparent -translate-x-full group-hover:animate-shimmer skew-x-[-20deg]" />
-                  <span className="relative z-10">{t.callNow}</span>
+                  <span className="relative z-10 leading-tight break-words text-sm sm:text-base px-2">{t.callNow}</span>
                 </a>
               </div>
             </div>
