@@ -432,13 +432,16 @@ export default function HomeClient() {
             {achievements.map((achievement, index) => {
               const IconComponent = achievement.icon;
               return (
-                <Tilt key={index} isDisabled={isEnabled} rotation={15} className="h-full">
+                <Tilt key={index} isDisabled={isEnabled} rotation={15} className="h-full group">
                   <div
-                    className="card-base h-full bg-card/90 backdrop-blur-sm border border-border p-6 transition-all duration-300"
+                    className="relative card-base h-full bg-card/90 backdrop-blur-sm p-6 transition-all duration-300 rounded-xl"
                   >
-                    <div className="flex flex-col items-center space-y-3">
+                    <div className="absolute -inset-0.5 bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-[2px]" />
+                    <div className="absolute inset-0 bg-card rounded-xl" />
+                    
+                    <div className="relative flex flex-col items-center space-y-3 z-10">
                       <div
-                        className={`p-3 rounded-lg bg-slate-100 dark:bg-slate-800 ${achievement.color}`}
+                        className={`p-3 rounded-lg bg-slate-100 dark:bg-slate-800 transition-colors duration-300 group-hover:bg-slate-200 dark:group-hover:bg-slate-700 ${achievement.color}`}
                       >
                         <IconComponent size={24} />
                       </div>
