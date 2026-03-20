@@ -59,7 +59,11 @@ export default function HomeClient() {
     let cancelled = false;
 
     const enable = () => {
-      if (!cancelled) setShowWaves(true);
+      if (!cancelled) {
+        requestAnimationFrame(() => {
+          setShowWaves(true);
+        });
+      }
     };
 
     const w = window as unknown as {
@@ -85,80 +89,133 @@ export default function HomeClient() {
   useEffect(() => {
     if (isEnabled) return; // Skip intersection observer in a11y mode
 
-    const elements = Array.from(document.querySelectorAll<HTMLElement>("[data-reveal]"));
-    if (!("IntersectionObserver" in window)) {
-      elements.forEach((element) => element.classList.add("is-visible"));
-      return;
+    let isCancelled = false;
+    let observer: IntersectionObserver | null = null;
+    
+    // Use requestIdleCallback to initialize observers when main thread is free
+    const initObserver = () => {
+      if (isCancelled) return;
+      
+      const elements = Array.from(document.querySelectorAll<HTMLElement>("[data-reveal]"));
+      if (!("IntersectionObserver" in window)) {
+        elements.forEach((element) => element.classList.add("is-visible"));
+        return;
+      }
+      
+      observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              // Use requestAnimationFrame to batch DOM updates
+              requestAnimationFrame(() => {
+                entry.target.classList.add("is-visible");
+              });
+              if (observer) observer.unobserve(entry.target);
+            }
+          });
+        },
+        { rootMargin: "1700px 0px", threshold: 0.05 },
+      );
+
+      elements.forEach((element) => observer?.observe(element));
+    };
+
+    if ('requestIdleCallback' in window) {
+      (window as any).requestIdleCallback(initObserver);
+    } else {
+      setTimeout(initObserver, 100);
     }
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add("is-visible");
-            observer.unobserve(entry.target);
-          }
-        });
-      },
-      { rootMargin: "1700px 0px", threshold: 0.05 },
-    );
-
-    elements.forEach((element) => observer.observe(element));
-    return () => observer.disconnect();
+    return () => {
+      isCancelled = true;
+      if (observer) observer.disconnect();
+    };
   }, [isEnabled]);
 
   useEffect(() => {
     if (isEnabled) return;
 
-    const anchor = workingStepperAnchorRef.current;
-    if (!anchor || !("IntersectionObserver" in window)) {
-      const timeoutId = window.setTimeout(() => {
+    let isCancelled = false;
+    let observer: IntersectionObserver | null = null;
+    
+    const initObserver = () => {
+      if (isCancelled) return;
+      const anchor = workingStepperAnchorRef.current;
+      if (!anchor || !("IntersectionObserver" in window)) {
         setShowWorkingStepper(true);
-      }, 0);
-      return () => window.clearTimeout(timeoutId);
+        return;
+      }
+
+      observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              requestAnimationFrame(() => {
+                setShowWorkingStepper(true);
+              });
+              if (observer) observer.disconnect();
+            }
+          });
+        },
+        { rootMargin: "1700px 0px", threshold: 0.01 },
+      );
+
+      observer.observe(anchor);
+    };
+
+    if ('requestIdleCallback' in window) {
+      (window as any).requestIdleCallback(initObserver);
+    } else {
+      setTimeout(initObserver, 100);
     }
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            setShowWorkingStepper(true);
-            observer.disconnect();
-          }
-        });
-      },
-      { rootMargin: "1700px 0px", threshold: 0.01 },
-    );
-
-    observer.observe(anchor);
-    return () => observer.disconnect();
+    return () => {
+      isCancelled = true;
+      if (observer) observer.disconnect();
+    };
   }, [isEnabled]);
 
   useEffect(() => {
     if (isEnabled) return;
 
-    const anchor = practiceAreasAnchorRef.current;
-    if (!anchor || !("IntersectionObserver" in window)) {
-      const timeoutId = window.setTimeout(() => {
+    let isCancelled = false;
+    let observer: IntersectionObserver | null = null;
+    
+    const initObserver = () => {
+      if (isCancelled) return;
+      const anchor = practiceAreasAnchorRef.current;
+      if (!anchor || !("IntersectionObserver" in window)) {
         setShowPracticeAreas(true);
-      }, 0);
-      return () => window.clearTimeout(timeoutId);
+        return;
+      }
+
+      observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              requestAnimationFrame(() => {
+                setShowPracticeAreas(true);
+              });
+              if (observer) observer.disconnect();
+            }
+          });
+        },
+        { rootMargin: "1700px 0px", threshold: 0.01 },
+      );
+
+      observer.observe(anchor);
+    };
+
+    if ('requestIdleCallback' in window) {
+      (window as any).requestIdleCallback(initObserver);
+    } else {
+      setTimeout(initObserver, 100);
     }
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            setShowPracticeAreas(true);
-            observer.disconnect();
-          }
-        });
-      },
-      { rootMargin: "1700px 0px", threshold: 0.01 }
-    );
-
-    observer.observe(anchor);
-    return () => observer.disconnect();
+    return () => {
+      isCancelled = true;
+      if (observer) observer.disconnect();
+    };
   }, [isEnabled]);
 
   // Data: achievements stats shown as cards
