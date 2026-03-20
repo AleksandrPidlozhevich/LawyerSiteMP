@@ -100,7 +100,7 @@ export default function WorkingStepper({ className = "" }: WorkingStepperProps) 
         <motion.div
             initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 1.2, duration: 0.8 }}
+            transition={{ duration: 0.8 }}
             className={`mb-16 ${className}`}
         >
             {/* Header */}
@@ -109,7 +109,7 @@ export default function WorkingStepper({ className = "" }: WorkingStepperProps) 
                     className="text-3xl md:text-4xl font-bold mb-4 text-foreground"
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 1.4, duration: 0.6 }}
+                    transition={{ delay: 0.2, duration: 0.6 }}
                 >
                     {t.howToStartWorking}
                 </motion.h2>
@@ -124,7 +124,7 @@ export default function WorkingStepper({ className = "" }: WorkingStepperProps) 
                             className="h-full bg-slate-600 dark:bg-slate-400"
                             initial={{ width: "0%" }}
                             animate={{ width: "100%" }}
-                            transition={{ delay: 2, duration: 2, ease: "easeInOut" }}
+                            transition={{ delay: 0.5, duration: 1.5, ease: "easeInOut" }}
                         />
                     </div>
 
@@ -137,14 +137,14 @@ export default function WorkingStepper({ className = "" }: WorkingStepperProps) 
                                     key={index}
                                     initial={{ opacity: 0, y: 30 }}
                                     animate={{ opacity: 1, y: 0 }}
-                                    transition={{ delay: 1.6 + index * 0.3, duration: 0.6 }}
+                                    transition={{ delay: 0.4 + index * 0.2, duration: 0.6 }}
                                     className="flex flex-col items-center"
                                 >
                                     {/* Step Circle */}
                                     <motion.div
                                         initial={{ scale: 0 }}
                                         animate={{ scale: 1 }}
-                                        transition={{ delay: 1.8 + index * 0.3, duration: 0.4 }}
+                                        transition={{ delay: 0.5 + index * 0.2, duration: 0.4 }}
                                         className="relative mb-6"
                                     >
                                         <div className="w-16 h-16 bg-white dark:bg-slate-900 border-4 border-slate-600 dark:border-slate-400 rounded-full flex items-center justify-center shadow-lg">
@@ -159,7 +159,7 @@ export default function WorkingStepper({ className = "" }: WorkingStepperProps) 
                                     <motion.div
                                         initial={{ opacity: 0 }}
                                         animate={{ opacity: 1 }}
-                                        transition={{ delay: 2 + index * 0.3, duration: 0.6 }}
+                                        transition={{ delay: 0.7 + index * 0.2, duration: 0.6 }}
                                         className="text-center"
                                     >
                                         <h3 className="text-lg font-semibold mb-3 text-foreground">
@@ -185,7 +185,7 @@ export default function WorkingStepper({ className = "" }: WorkingStepperProps) 
                             className="w-full bg-slate-600 dark:bg-slate-400"
                             initial={{ height: "0%" }}
                             animate={{ height: "100%" }}
-                            transition={{ delay: 2, duration: 2, ease: "easeInOut" }}
+                            transition={{ delay: 0.5, duration: 1.5, ease: "easeInOut" }}
                         />
                     </div>
 
@@ -198,14 +198,14 @@ export default function WorkingStepper({ className = "" }: WorkingStepperProps) 
                                     key={index}
                                     initial={{ opacity: 0, x: -30 }}
                                     animate={{ opacity: 1, x: 0 }}
-                                    transition={{ delay: 1.6 + index * 0.3, duration: 0.6 }}
+                                    transition={{ delay: 0.4 + index * 0.2, duration: 0.6 }}
                                     className="relative flex items-start gap-6"
                                 >
                                     {/* Step Circle */}
                                     <motion.div
                                         initial={{ scale: 0 }}
                                         animate={{ scale: 1 }}
-                                        transition={{ delay: 1.8 + index * 0.3, duration: 0.4 }}
+                                        transition={{ delay: 0.5 + index * 0.2, duration: 0.4 }}
                                         className="relative flex-shrink-0"
                                     >
                                         <div className="w-16 h-16 bg-white dark:bg-slate-900 border-4 border-slate-600 dark:border-slate-400 rounded-full flex items-center justify-center shadow-lg">
@@ -220,7 +220,7 @@ export default function WorkingStepper({ className = "" }: WorkingStepperProps) 
                                     <motion.div
                                         initial={{ opacity: 0 }}
                                         animate={{ opacity: 1 }}
-                                        transition={{ delay: 2 + index * 0.3, duration: 0.6 }}
+                                        transition={{ delay: 0.7 + index * 0.2, duration: 0.6 }}
                                         className="flex-1 pt-2"
                                     >
                                         <h3 className="text-xl font-semibold mb-3 text-foreground">
