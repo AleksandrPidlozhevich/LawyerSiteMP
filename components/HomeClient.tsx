@@ -591,34 +591,35 @@ export default function HomeClient() {
                   const IconComponent = area.icon;
 
                   return (
-                    <Tilt key={index} isDisabled={isEnabled} rotation={10} className="h-full">
-                      <div className="card-base h-full bg-card/90 backdrop-blur-sm border border-border p-6 transition-all duration-300">
-                        <div className="flex items-start gap-4">
-                          <div
-                            className={`p-3 rounded-lg bg-slate-100 dark:bg-slate-800 ${area.color}`}
-                          >
-                            <IconComponent size={22} />
+                    <div
+                      key={index}
+                      className="card-base h-full bg-card/90 backdrop-blur-sm border border-border p-6 transition-all duration-300"
+                    >
+                      <div className="flex items-start gap-4">
+                        <div
+                          className={`p-3 rounded-lg bg-slate-100 dark:bg-slate-800 ${area.color}`}
+                        >
+                          <IconComponent size={22} />
+                        </div>
+                        <div className="flex-1">
+                          <div className="font-semibold text-foreground">{area.title}</div>
+                          <div className="text-sm text-muted-foreground mt-2 line-clamp-3">
+                            {area.preview}
                           </div>
-                          <div className="flex-1">
-                            <div className="font-semibold text-foreground">{area.title}</div>
-                            <div className="text-sm text-muted-foreground mt-2 line-clamp-3">
-                              {area.preview}
+                          <details className="mt-3">
+                            <summary 
+                              className="cursor-pointer select-none text-sm font-medium text-blue-600 dark:text-blue-400 hover:opacity-80 transition-opacity"
+                              aria-label={t.practiceReadMore}
+                            >
+                              {t.practiceReadMore}
+                            </summary>
+                            <div className="mt-3 text-sm text-muted-foreground whitespace-pre-line">
+                              {area.details}
                             </div>
-                            <details className="mt-3">
-                              <summary 
-                                className="cursor-pointer select-none text-sm font-medium text-blue-600 dark:text-blue-400 hover:opacity-80 transition-opacity"
-                                aria-label={t.practiceReadMore}
-                              >
-                                {t.practiceReadMore}
-                              </summary>
-                              <div className="mt-3 text-sm text-muted-foreground whitespace-pre-line">
-                                {area.details}
-                              </div>
-                            </details>
-                          </div>
+                          </details>
                         </div>
                       </div>
-                    </Tilt>
+                    </div>
                   );
                 })}
               </div>
