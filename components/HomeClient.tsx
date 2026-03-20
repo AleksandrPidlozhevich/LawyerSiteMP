@@ -20,6 +20,7 @@ import {
   Shield,
   ClipboardCheck,
   PenTool,
+  Phone,
 } from "lucide-react";
 import Image from "next/image";
 import dynamic from "next/dynamic";
@@ -368,9 +369,10 @@ export default function HomeClient() {
              </button>
              <a 
                href="tel:+375297798827"
-               className="px-8 py-4 bg-primary text-primary-foreground font-bold border-2 border-primary hover:bg-secondary hover:text-secondary-foreground text-xl rounded-none transition-colors text-center"
+               className="px-8 py-4 bg-primary text-primary-foreground font-bold border-2 border-primary hover:bg-secondary hover:text-secondary-foreground text-xl rounded-none transition-colors flex items-center justify-center gap-2"
              >
-               {t.callNow}
+               <Phone className="w-5 h-5" />
+               +375 (29) 779-88-27
              </a>
            </div>
         </section>
@@ -462,7 +464,10 @@ export default function HomeClient() {
                   className="p-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-full shadow-lg transition-all duration-300 relative overflow-hidden hover:shadow-[0_0_20px_rgba(147,51,234,0.5)] hover:-translate-y-1 active:translate-y-0 group flex-1 text-center flex items-center justify-center min-h-[60px]"
                 >
                   <div className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/30 to-transparent -translate-x-full group-hover:animate-shimmer skew-x-[-20deg]" />
-                  <span className="relative z-10 leading-tight break-words text-sm sm:text-base px-2">{t.callNow}</span>
+                  <span className="relative z-10 flex items-center gap-2 leading-tight break-words text-sm sm:text-base px-2">
+                    <Phone className="w-5 h-5" />
+                    +375 29 779-88-27
+                  </span>
                 </a>
               </div>
             </div>
