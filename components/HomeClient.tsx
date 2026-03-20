@@ -45,6 +45,7 @@ export default function HomeClient() {
 
   const [showPracticeAreas, setShowPracticeAreas] = useState(false);
   const practiceAreasAnchorRef = useRef<HTMLDivElement | null>(null);
+  const loadedRef = useRef({ workingStepper: false, practiceAreas: false });
 
   // Localization: select translation dictionary by current locale
   const { locale } = useLocale();
@@ -105,15 +106,18 @@ export default function HomeClient() {
       
       observer = new IntersectionObserver(
         (entries) => {
+          const visibleTargets: Element[] = [];
           entries.forEach((entry) => {
-            if (entry.isIntersecting) {
-              // Use requestAnimationFrame to batch DOM updates
-              requestAnimationFrame(() => {
-                entry.target.classList.add("is-visible");
-              });
-              if (observer) observer.unobserve(entry.target);
-            }
+            if (!entry.isIntersecting) return;
+            visibleTargets.push(entry.target);
+            observer?.unobserve(entry.target);
           });
+
+          if (visibleTargets.length > 0) {
+            requestAnimationFrame(() => {
+              visibleTargets.forEach((target) => target.classList.add("is-visible"));
+            });
+          }
         },
         { rootMargin: "1700px 0px", threshold: 0.05 },
       );
@@ -138,73 +142,61 @@ export default function HomeClient() {
 
     let isCancelled = false;
     let observer: IntersectionObserver | null = null;
-    
+
     const initObserver = () => {
       if (isCancelled) return;
-      const anchor = workingStepperAnchorRef.current;
-      if (!anchor || !("IntersectionObserver" in window)) {
+
+      const workingAnchor = workingStepperAnchorRef.current;
+      const practiceAnchor = practiceAreasAnchorRef.current;
+
+      if (!("IntersectionObserver" in window)) {
+        if (!loadedRef.current.workingStepper) {
+          loadedRef.current.workingStepper = true;
+          setShowWorkingStepper(true);
+        }
+        if (!loadedRef.current.practiceAreas) {
+          loadedRef.current.practiceAreas = true;
+          setShowPracticeAreas(true);
+        }
+        return;
+      }
+
+      observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (!entry.isIntersecting) return;
+
+            if (entry.target === workingAnchor && !loadedRef.current.workingStepper) {
+              loadedRef.current.workingStepper = true;
+              requestAnimationFrame(() => setShowWorkingStepper(true));
+              observer?.unobserve(entry.target);
+            }
+
+            if (entry.target === practiceAnchor && !loadedRef.current.practiceAreas) {
+              loadedRef.current.practiceAreas = true;
+              requestAnimationFrame(() => setShowPracticeAreas(true));
+              observer?.unobserve(entry.target);
+            }
+          });
+
+          if (loadedRef.current.workingStepper && loadedRef.current.practiceAreas) {
+            observer?.disconnect();
+          }
+        },
+        { rootMargin: "1700px 0px", threshold: 0.01 },
+      );
+
+      if (workingAnchor && !loadedRef.current.workingStepper) observer.observe(workingAnchor);
+      if (practiceAnchor && !loadedRef.current.practiceAreas) observer.observe(practiceAnchor);
+
+      if (!workingAnchor && !loadedRef.current.workingStepper) {
+        loadedRef.current.workingStepper = true;
         setShowWorkingStepper(true);
-        return;
       }
-
-      observer = new IntersectionObserver(
-        (entries) => {
-          entries.forEach((entry) => {
-            if (entry.isIntersecting) {
-              requestAnimationFrame(() => {
-                setShowWorkingStepper(true);
-              });
-              if (observer) observer.disconnect();
-            }
-          });
-        },
-        { rootMargin: "1700px 0px", threshold: 0.01 },
-      );
-
-      observer.observe(anchor);
-    };
-
-    if ('requestIdleCallback' in window) {
-      (window as any).requestIdleCallback(initObserver);
-    } else {
-      setTimeout(initObserver, 100);
-    }
-
-    return () => {
-      isCancelled = true;
-      if (observer) observer.disconnect();
-    };
-  }, [isEnabled]);
-
-  useEffect(() => {
-    if (isEnabled) return;
-
-    let isCancelled = false;
-    let observer: IntersectionObserver | null = null;
-    
-    const initObserver = () => {
-      if (isCancelled) return;
-      const anchor = practiceAreasAnchorRef.current;
-      if (!anchor || !("IntersectionObserver" in window)) {
+      if (!practiceAnchor && !loadedRef.current.practiceAreas) {
+        loadedRef.current.practiceAreas = true;
         setShowPracticeAreas(true);
-        return;
       }
-
-      observer = new IntersectionObserver(
-        (entries) => {
-          entries.forEach((entry) => {
-            if (entry.isIntersecting) {
-              requestAnimationFrame(() => {
-                setShowPracticeAreas(true);
-              });
-              if (observer) observer.disconnect();
-            }
-          });
-        },
-        { rootMargin: "1700px 0px", threshold: 0.01 },
-      );
-
-      observer.observe(anchor);
     };
 
     if ('requestIdleCallback' in window) {
@@ -215,7 +207,7 @@ export default function HomeClient() {
 
     return () => {
       isCancelled = true;
-      if (observer) observer.disconnect();
+      observer?.disconnect();
     };
   }, [isEnabled]);
 
