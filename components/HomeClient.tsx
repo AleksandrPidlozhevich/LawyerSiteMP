@@ -457,16 +457,16 @@ export default function HomeClient() {
                   className="p-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-full shadow-lg transition-all duration-300 relative overflow-hidden hover:shadow-[0_0_20px_rgba(59,130,246,0.5)] hover:-translate-y-1 active:translate-y-0 group flex-1 text-center flex items-center justify-center min-h-[60px]"
                 >
                   <div className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/30 to-transparent -translate-x-full group-hover:animate-shimmer skew-x-[-20deg]" />
-                  <span className="relative z-10 leading-tight break-words text-sm sm:text-base px-2">{t.orderCallback}</span>
+                  <span className="relative z-10 leading-tight text-sm sm:text-base px-2">{t.orderCallback}</span>
                 </button>
                 <a
                   href="tel:+375297798827"
                   className="p-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-full shadow-lg transition-all duration-300 relative overflow-hidden hover:shadow-[0_0_20px_rgba(147,51,234,0.5)] hover:-translate-y-1 active:translate-y-0 group flex-1 text-center flex items-center justify-center min-h-[60px]"
                 >
                   <div className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/30 to-transparent -translate-x-full group-hover:animate-shimmer skew-x-[-20deg]" />
-                  <span className="relative z-10 flex items-center gap-2 leading-tight break-words text-sm sm:text-base px-2">
-                    <Phone className="w-5 h-5" />
-                    +375 29 779-88-27
+                  <span className="relative z-10 flex items-center justify-center gap-2 leading-tight text-sm sm:text-base px-2 whitespace-nowrap">
+                    <Phone className="w-5 h-5 shrink-0" />
+                    <span>+375 (29) 779-88-27</span>
                   </span>
                 </a>
               </div>
@@ -474,17 +474,16 @@ export default function HomeClient() {
 
             <div className="relative order-1 lg:order-2">
               <Tilt className="relative w-full max-w-md mx-auto lg:max-w-none" isDisabled={isEnabled} rotation={10}>
-                <div className="relative aspect-[4/5] sm:aspect-[3/4] w-full max-h-[420px] sm:max-h-none">
+                <div className="relative aspect-[4/5] sm:aspect-[3/4] w-full max-h-[420px] sm:max-h-none rounded-2xl border-[3px] border-cyan-400 shadow-[0_0_15px_rgba(34,211,238,0.6),0_0_30px_rgba(34,211,238,0.4)] overflow-hidden">
                   <Image
                     src="/PidlozhevichM.png"
                     alt={t.professionalLawyer}
                     fill
-                    className="object-cover object-top rounded-2xl shadow-2xl"
+                    className="object-cover object-top"
                     priority
                     fetchPriority="high"
                     sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 40vw"
                   />
-                  <div className="absolute -inset-4 bg-gradient-to-r from-blue-600/20 to-purple-600/20 rounded-2xl blur-xl -z-10" />
                 </div>
               </Tilt>
             </div>

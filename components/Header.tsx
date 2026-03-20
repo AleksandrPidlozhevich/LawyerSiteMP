@@ -85,10 +85,9 @@ export function Header({ isHidden = false }: HeaderProps) {
                 {/* Left block: logo */}
                 <Link
                     href="/"
-                    onClick={() => {
-                        if (pathname === '/') {
-                            window.location.reload();
-                        }
+                    onClick={(e) => {
+                        e.preventDefault();
+                        window.location.href = '/';
                     }}
                     className="flex items-center gap-2 text-xl font-bold hover:opacity-80 transition-colors"
                     aria-label={t.logo}
