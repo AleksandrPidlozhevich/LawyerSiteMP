@@ -474,7 +474,8 @@ export default function HomeClient() {
 
             <div className="relative order-1 lg:order-2">
               <div className="relative w-full max-w-md mx-auto lg:max-w-none rounded-2xl bg-gradient-to-r from-blue-500 to-purple-600 p-[3px] shadow-[0_0_15px_rgba(59,130,246,0.35),0_0_20px_rgba(147,51,234,0.3)]">
-                <div className="relative aspect-[4/5] sm:aspect-[3/4] w-full max-h-[420px] sm:max-h-none rounded-[13px] overflow-hidden">
+                <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-blue-500 to-purple-600 blur-[2px] opacity-60" />
+                <div className="relative z-10 aspect-[4/5] sm:aspect-[3/4] w-full max-h-[420px] sm:max-h-none rounded-[13px] overflow-hidden">
                   <Image
                     src="/PidlozhevichM.png"
                     alt={t.professionalLawyer}
