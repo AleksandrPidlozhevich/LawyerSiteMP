@@ -126,7 +126,7 @@ export default function HomeClient() {
           }
         });
       },
-      { rootMargin: "250px 0px", threshold: 0.01 },
+      { rootMargin: "1000px 0px", threshold: 0.01 },
     );
 
     observer.observe(anchor);
@@ -153,7 +153,7 @@ export default function HomeClient() {
           }
         });
       },
-      { rootMargin: "250px 0px", threshold: 0.01 },
+      { rootMargin: "1000px 0px", threshold: 0.01 },
     );
 
     observer.observe(anchor);
