@@ -5,11 +5,28 @@ export default function robots(): MetadataRoute.Robots {
   const baseUrl = getBaseUrl();
   
   return {
-    rules: {
-      userAgent: '*',
-      allow: '/',
-      disallow: '/api/',
-    },
+    rules: [
+      {
+        userAgent: '*',
+        allow: '/',
+        disallow: '/api/',
+      },
+      {
+        userAgent: 'Yandex',
+        allow: '/',
+        disallow: [
+          '/api/',
+          '/*?etext=*',
+          '/*?from=*',
+          '/*?utm_*',
+          '/*?gclid=*',
+          '/*?fbclid=*',
+          '/*?yclid=*',
+          '/*?ysclid=*',
+        ],
+      },
+    ],
+    host: baseUrl,
     sitemap: `${baseUrl}/sitemap.xml`,
   };
 }

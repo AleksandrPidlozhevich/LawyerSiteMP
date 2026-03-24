@@ -1,7 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 const supportedLocales = new Set(['ru', 'en', 'by']);
-const ignoredQueryParams = new Set(['etext', 'from', 'utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content']);
+const ignoredQueryParams = new Set([
+    'etext',
+    'from',
+    'utm_source',
+    'utm_medium',
+    'utm_campaign',
+    'utm_term',
+    'utm_content',
+    'utm_id',
+    'gclid',
+    'fbclid',
+    'yclid',
+    'ysclid',
+]);
 
 export function middleware(request: NextRequest) {
     const pathname = request.nextUrl.pathname;
