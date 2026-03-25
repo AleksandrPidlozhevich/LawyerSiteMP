@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from 'react';
 import { motion } from "framer-motion";
 import { Phone, Users2, FileText, Briefcase, LucideIcon } from "lucide-react";
 import { useLocale } from '@/context/LocaleContext';
@@ -77,6 +78,14 @@ export default function WorkingStepper({ className = "" }: WorkingStepperProps) 
     const { locale } = useLocale();
     const { isEnabled } = useAccessibility();
     const t = getDictionary(locale);
+    const [isDesktop, setIsDesktop] = useState(true);
+
+    useEffect(() => {
+        const checkDesktop = () => setIsDesktop(window.innerWidth >= 1024);
+        checkDesktop();
+        window.addEventListener('resize', checkDesktop);
+        return () => window.removeEventListener('resize', checkDesktop);
+    }, []);
 
     if (isEnabled) {
         return (
@@ -116,126 +125,127 @@ export default function WorkingStepper({ className = "" }: WorkingStepperProps) 
             </div>
 
             {/* Desktop Stepper */}
-            <div className="hidden lg:block">
-                <div className="relative">
-                    {/* Connection Line */}
-                    <div className="absolute top-16 left-0 right-0 h-0.5 bg-slate-200 dark:bg-slate-700 z-0">
-                        <motion.div
-                            className="h-full bg-slate-600 dark:bg-slate-400"
-                            initial={{ width: "0%" }}
-                            animate={{ width: "100%" }}
-                            transition={{ delay: 0.5, duration: 1.5, ease: "easeInOut" }}
-                        />
-                    </div>
+            {isDesktop ? (
+                <div className="hidden lg:block">
+                    <div className="relative">
+                        {/* Connection Line */}
+                        <div className="absolute top-16 left-0 right-0 h-0.5 bg-slate-200 dark:bg-slate-700 z-0">
+                            <motion.div
+                                className="h-full bg-slate-600 dark:bg-slate-400"
+                                initial={{ width: "0%" }}
+                                animate={{ width: "100%" }}
+                                transition={{ delay: 0.5, duration: 1.5, ease: "easeInOut" }}
+                            />
+                        </div>
 
-                    {/* Steps */}
-                    <div className="relative z-10 grid grid-cols-4 gap-8">
-                        {steps.map((step, index) => {
-                            const IconComponent = step.icon;
-                            return (
-                                <motion.div
-                                    key={index}
-                                    initial={{ opacity: 0, y: 30 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    transition={{ delay: 0.4 + index * 0.2, duration: 0.6 }}
-                                    className="flex flex-col items-center"
-                                >
-                                    {/* Step Circle */}
+                        {/* Steps */}
+                        <div className="relative z-10 grid grid-cols-4 gap-8">
+                            {steps.map((step, index) => {
+                                const IconComponent = step.icon;
+                                return (
                                     <motion.div
-                                        initial={{ scale: 0 }}
-                                        animate={{ scale: 1 }}
-                                        transition={{ delay: 0.5 + index * 0.2, duration: 0.4 }}
-                                        className="relative mb-6"
+                                        key={index}
+                                        initial={{ opacity: 0, y: 30 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        transition={{ delay: 0.4 + index * 0.2, duration: 0.6 }}
+                                        className="flex flex-col items-center"
                                     >
-                                        <div className="w-16 h-16 bg-white dark:bg-slate-900 border-4 border-slate-600 dark:border-slate-400 rounded-full flex items-center justify-center shadow-lg">
-                                            <IconComponent size={24} className="text-slate-600 dark:text-slate-400" />
-                                        </div>
-                                        <div className="absolute -bottom-2 -right-2 w-6 h-6 bg-slate-600 dark:bg-slate-400 text-white text-xs font-bold rounded-full flex items-center justify-center">
-                                            {index + 1}
-                                        </div>
-                                    </motion.div>
+                                        {/* Step Circle */}
+                                        <motion.div
+                                            initial={{ scale: 0 }}
+                                            animate={{ scale: 1 }}
+                                            transition={{ delay: 0.5 + index * 0.2, duration: 0.4 }}
+                                            className="relative mb-6"
+                                        >
+                                            <div className="w-16 h-16 bg-white dark:bg-slate-900 border-4 border-slate-600 dark:border-slate-400 rounded-full flex items-center justify-center shadow-lg">
+                                                <IconComponent size={24} className="text-slate-600 dark:text-slate-400" />
+                                            </div>
+                                            <div className="absolute -bottom-2 -right-2 w-6 h-6 bg-slate-600 dark:bg-slate-400 text-white text-xs font-bold rounded-full flex items-center justify-center">
+                                                {index + 1}
+                                            </div>
+                                        </motion.div>
 
-                                    {/* Content */}
-                                    <motion.div
-                                        initial={{ opacity: 0 }}
-                                        animate={{ opacity: 1 }}
-                                        transition={{ delay: 0.7 + index * 0.2, duration: 0.6 }}
-                                        className="text-center"
-                                    >
-                                        <h3 className="text-lg font-semibold mb-3 text-foreground">
-                                            {t[step.titleKey]}
-                                        </h3>
-                                        <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-line max-w-xs">
-                                            {makePhoneClickable(t[step.descriptionKey])}
-                                        </p>
+                                        {/* Content */}
+                                        <motion.div
+                                            initial={{ opacity: 0 }}
+                                            animate={{ opacity: 1 }}
+                                            transition={{ delay: 0.7 + index * 0.2, duration: 0.6 }}
+                                            className="text-center"
+                                        >
+                                            <h3 className="text-lg font-semibold mb-3 text-foreground">
+                                                {t[step.titleKey]}
+                                            </h3>
+                                            <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-line max-w-xs">
+                                                {makePhoneClickable(t[step.descriptionKey])}
+                                            </p>
+                                        </motion.div>
                                     </motion.div>
-                                </motion.div>
-                            );
-                        })}
-                    </div>
-                </div>
-            </div>
-
-            {/* Mobile/Tablet Vertical Stepper */}
-            <div className="lg:hidden">
-                <div className="relative max-w-2xl mx-auto">
-                    {/* Vertical Line */}
-                    <div className="absolute left-8 top-0 bottom-0 w-0.5 bg-slate-200 dark:bg-slate-700">
-                        <motion.div
-                            className="w-full bg-slate-600 dark:bg-slate-400"
-                            initial={{ height: "0%" }}
-                            animate={{ height: "100%" }}
-                            transition={{ delay: 0.5, duration: 1.5, ease: "easeInOut" }}
-                        />
-                    </div>
-
-                    {/* Steps */}
-                    <div className="space-y-12">
-                        {steps.map((step, index) => {
-                            const IconComponent = step.icon;
-                            return (
-                                <motion.div
-                                    key={index}
-                                    initial={{ opacity: 0, x: -30 }}
-                                    animate={{ opacity: 1, x: 0 }}
-                                    transition={{ delay: 0.4 + index * 0.2, duration: 0.6 }}
-                                    className="relative flex items-start gap-6"
-                                >
-                                    {/* Step Circle */}
-                                    <motion.div
-                                        initial={{ scale: 0 }}
-                                        animate={{ scale: 1 }}
-                                        transition={{ delay: 0.5 + index * 0.2, duration: 0.4 }}
-                                        className="relative flex-shrink-0"
-                                    >
-                                        <div className="w-16 h-16 bg-white dark:bg-slate-900 border-4 border-slate-600 dark:border-slate-400 rounded-full flex items-center justify-center shadow-lg">
-                                            <IconComponent size={24} className="text-slate-600 dark:text-slate-400" />
-                                        </div>
-                                        <div className="absolute -bottom-2 -right-2 w-6 h-6 bg-slate-600 dark:bg-slate-400 text-white text-xs font-bold rounded-full flex items-center justify-center">
-                                            {index + 1}
-                                        </div>
-                                    </motion.div>
-
-                                    {/* Content */}
-                                    <motion.div
-                                        initial={{ opacity: 0 }}
-                                        animate={{ opacity: 1 }}
-                                        transition={{ delay: 0.7 + index * 0.2, duration: 0.6 }}
-                                        className="flex-1 pt-2"
-                                    >
-                                        <h3 className="text-xl font-semibold mb-3 text-foreground">
-                                            {t[step.titleKey]}
-                                        </h3>
-                                        <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-line">
-                                            {makePhoneClickable(t[step.descriptionKey])}
-                                        </p>
-                                    </motion.div>
-                                </motion.div>
-                            );
-                        })}
+                                );
+                            })}
+                        </div>
                     </div>
                 </div>
-            </div>
+            ) : (
+                <div className="lg:hidden">
+                    <div className="relative max-w-2xl mx-auto">
+                        {/* Vertical Line */}
+                        <div className="absolute left-8 top-0 bottom-0 w-0.5 bg-slate-200 dark:bg-slate-700">
+                            <motion.div
+                                className="w-full bg-slate-600 dark:bg-slate-400"
+                                initial={{ height: "0%" }}
+                                animate={{ height: "100%" }}
+                                transition={{ delay: 0.5, duration: 1.5, ease: "easeInOut" }}
+                            />
+                        </div>
+
+                        {/* Steps */}
+                        <div className="space-y-12">
+                            {steps.map((step, index) => {
+                                const IconComponent = step.icon;
+                                return (
+                                    <motion.div
+                                        key={index}
+                                        initial={{ opacity: 0, x: -30 }}
+                                        animate={{ opacity: 1, x: 0 }}
+                                        transition={{ delay: 0.4 + index * 0.2, duration: 0.6 }}
+                                        className="relative flex items-start gap-6"
+                                    >
+                                        {/* Step Circle */}
+                                        <motion.div
+                                            initial={{ scale: 0 }}
+                                            animate={{ scale: 1 }}
+                                            transition={{ delay: 0.5 + index * 0.2, duration: 0.4 }}
+                                            className="relative flex-shrink-0"
+                                        >
+                                            <div className="w-16 h-16 bg-white dark:bg-slate-900 border-4 border-slate-600 dark:border-slate-400 rounded-full flex items-center justify-center shadow-lg">
+                                                <IconComponent size={24} className="text-slate-600 dark:text-slate-400" />
+                                            </div>
+                                            <div className="absolute -bottom-2 -right-2 w-6 h-6 bg-slate-600 dark:bg-slate-400 text-white text-xs font-bold rounded-full flex items-center justify-center">
+                                                {index + 1}
+                                            </div>
+                                        </motion.div>
+
+                                        {/* Content */}
+                                        <motion.div
+                                            initial={{ opacity: 0 }}
+                                            animate={{ opacity: 1 }}
+                                            transition={{ delay: 0.7 + index * 0.2, duration: 0.6 }}
+                                            className="flex-1 pt-2"
+                                        >
+                                            <h3 className="text-xl font-semibold mb-3 text-foreground">
+                                                {t[step.titleKey]}
+                                            </h3>
+                                            <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-line">
+                                                {makePhoneClickable(t[step.descriptionKey])}
+                                            </p>
+                                        </motion.div>
+                                    </motion.div>
+                                );
+                            })}
+                        </div>
+                    </div>
+                </div>
+            )}
         </motion.div>
     );
 }

@@ -213,6 +213,9 @@ export const Waves = forwardRef<HTMLDivElement, WavesProps>(({
             } else if (isTablet()) {
                 adaptiveXGap = Math.max(configRef.current.xGap * 1.3, 20);
                 adaptiveYGap = Math.max(configRef.current.yGap * 1.3, 20);
+            } else {
+                adaptiveXGap = Math.max(configRef.current.xGap * 2.5, 35);
+                adaptiveYGap = Math.max(configRef.current.yGap * 2.5, 35);
             }
             
             const totalLines = Math.ceil(oWidth / adaptiveXGap);
