@@ -7,7 +7,6 @@ import { getBaseUrl, getDictionary, resolveLocale } from "@/lib/i18n";
 import { Suspense } from "react";
 import YandexMetrika from "../components/YandexMetrika";
 import GoogleAnalytics from "../components/GoogleAnalytics";
-import GoogleTagManager from "../components/GoogleTagManager";
 
 export async function generateMetadata(): Promise<Metadata> {
     const cookieStore = await cookies();
@@ -78,7 +77,6 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     const cookieStore = await cookies();
     const headerList = await headers();
     const locale = resolveLocale(cookieStore.get('NEXT_LOCALE')?.value, headerList.get('accept-language'));
-    const hasGtm = Boolean(process.env.NEXT_PUBLIC_GTM_ID);
 
     return (
         <html lang={locale} suppressHydrationWarning>
@@ -91,8 +89,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             </LocaleProvider>
             <Suspense fallback={null}>
                 <YandexMetrika />
-                <GoogleTagManager />
-                {!hasGtm ? <GoogleAnalytics /> : null}
+                <GoogleAnalytics />
             </Suspense>
         </ThemeProvider>
         </body>
