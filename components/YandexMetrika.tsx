@@ -4,7 +4,7 @@ import { useEffect, useRef } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
 
 const YM_ID = process.env.NEXT_PUBLIC_YANDEX_METRIKA_ID;
-const LOAD_DELAY_MS = 8000;
+const LOAD_DELAY_MS = 6000;
 
 declare global {
   interface Window {
