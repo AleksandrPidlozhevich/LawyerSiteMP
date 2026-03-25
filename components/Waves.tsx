@@ -213,9 +213,6 @@ export const Waves = forwardRef<HTMLDivElement, WavesProps>(({
             } else if (isTablet()) {
                 adaptiveXGap = Math.max(configRef.current.xGap * 1.3, 20);
                 adaptiveYGap = Math.max(configRef.current.yGap * 1.3, 20);
-            } else {
-                adaptiveXGap = Math.max(configRef.current.xGap * 2.5, 35);
-                adaptiveYGap = Math.max(configRef.current.yGap * 2.5, 35);
             }
             
             const totalLines = Math.ceil(oWidth / adaptiveXGap);
@@ -258,23 +255,27 @@ export const Waves = forwardRef<HTMLDivElement, WavesProps>(({
                 waveAmpY *= 0.8;
             }
 
+            const timeX = time * waveSpeedX * 0.002;
+            const timeY = time * waveSpeedY * 0.0015;
+
             lines.forEach((pts) => {
-                pts.forEach((p) => {
-                    const move =
-                        noise.perlin2(
-                            (p.x + time * waveSpeedX) * 0.002,
-                            (p.y + time * waveSpeedY) * 0.0015
-                        ) * 12;
+                for (let i = 0; i < pts.length; i++) {
+                    const p = pts[i];
+                    const move = noise.perlin2(
+                        p.x * 0.002 + timeX,
+                        p.y * 0.0015 + timeY
+                    ) * 12;
                     p.wave.x = Math.cos(move) * waveAmpX;
                     p.wave.y = Math.sin(move) * waveAmpY;
-                });
+                }
             });
         }
 
         function moved(point: Point): { x: number; y: number } {
-            const x = point.x + point.wave.x;
-            const y = point.y + point.wave.y;
-            return { x: Math.round(x * 10) / 10, y: Math.round(y * 10) / 10 };
+            return { 
+                x: point.x + point.wave.x, 
+                y: point.y + point.wave.y 
+            };
         }
 
         function drawLines() {
@@ -338,7 +339,9 @@ export const Waves = forwardRef<HTMLDivElement, WavesProps>(({
         }
 
         function tick(t: number) {
-            const targetFPS = isMobile() ? 30 : 60;
+            // Drop targetFPS on desktop to 30 to significantly reduce CPU usage 
+            // without drastically changing the visual smoothness of slow waves
+            const targetFPS = 30;
             const frameInterval = 1000 / targetFPS;
             
             if (t - lastFrameTimeRef.current >= frameInterval) {
