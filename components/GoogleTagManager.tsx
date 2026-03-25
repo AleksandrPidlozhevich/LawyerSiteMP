@@ -1,35 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import Script from "next/script";
 
 const GTM_ID = process.env.NEXT_PUBLIC_GTM_ID;
 
 export default function GoogleTagManager() {
-  const [shouldLoad, setShouldLoad] = useState(false);
-
-  useEffect(() => {
-    if (!GTM_ID) return;
-
-    const load = () => setShouldLoad(true);
-    const timeoutId = window.setTimeout(load, 12000);
-    const options: AddEventListenerOptions = { once: true, passive: true };
-
-    window.addEventListener("pointerdown", load, options);
-    window.addEventListener("keydown", load, { once: true });
-    window.addEventListener("scroll", load, options);
-    window.addEventListener("touchstart", load, options);
-
-    return () => {
-      window.clearTimeout(timeoutId);
-      window.removeEventListener("pointerdown", load);
-      window.removeEventListener("keydown", load);
-      window.removeEventListener("scroll", load);
-      window.removeEventListener("touchstart", load);
-    };
-  }, []);
-
-  if (!GTM_ID || !shouldLoad) return null;
+  if (!GTM_ID) return null;
 
   return (
     <>
