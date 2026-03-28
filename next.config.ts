@@ -42,6 +42,14 @@ const nextConfig: NextConfig = {
     inlineCss: true,
     optimizePackageImports: ['lucide-react', 'framer-motion'],
   },
+  async rewrites() {
+    return [
+      {
+        source: '/robots.txt',
+        destination: '/api/robots',
+      },
+    ];
+  },
 };
 
 export default nextConfig;
