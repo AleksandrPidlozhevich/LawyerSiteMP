@@ -53,9 +53,10 @@ export async function GET(request: Request) {
 
     return NextResponse.json({ success: true, message: 'Stats recorded successfully' });
 
-  } catch (error: any) {
-    console.error('Cron job error:', error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : 'Unknown error';
+    console.error('Cron job error:', message);
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }
 

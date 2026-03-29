@@ -3,7 +3,7 @@ import React from 'react';
 import Image from 'next/image';
 import { ChevronRight } from 'lucide-react';
 
-interface RichText {
+interface RichTextItem {
   type?: string;
   text?: {
     content: string;
@@ -11,19 +11,6 @@ interface RichText {
       url: string;
     };
   };
-  plain_text: string;
-  href?: string;
-  annotations?: {
-    bold?: boolean;
-    italic?: boolean;
-    strikethrough?: boolean;
-    underline?: boolean;
-    code?: boolean;
-    color?: string;
-  };
-}
-
-interface RichTextItem {
   plain_text: string;
   href?: string;
   annotations?: {
@@ -99,7 +86,7 @@ interface NotionRendererProps {
   blocks: NotionBlock[];
 }
 
-const renderRichText = (richTextArray: RichText[]) => {
+const renderRichText = (richTextArray: RichTextItem[]) => {
   return richTextArray.map((richText, index) => {
     const {
       annotations = {},
@@ -107,7 +94,7 @@ const renderRichText = (richTextArray: RichText[]) => {
       plain_text,
       href,
     } = richText;
-    const { bold = false, code = false, color = 'default', italic = false, strikethrough = false, underline = false } = annotations;
+    const { bold = false, code = false, italic = false, strikethrough = false, underline = false } = annotations;
 
     let element = <span key={index}>{plain_text}</span>;
 
@@ -249,7 +236,7 @@ const renderBlock = (block: NotionBlock) => {
       return (
         <pre key={id} className="bg-gray-100 dark:bg-gray-800 p-4 rounded-lg overflow-x-auto my-4">
           <code className="text-sm font-mono">
-            {block.code?.rich_text ? block.code.rich_text.map((text: RichText) => text.plain_text).join('') : ''}
+            {block.code?.rich_text ? block.code.rich_text.map((text: RichTextItem) => text.plain_text).join('') : ''}
           </code>
         </pre>
       );
@@ -264,7 +251,7 @@ const renderBlock = (block: NotionBlock) => {
       if (!src) return null;
       
       const caption = block.image.caption && block.image.caption.length > 0 
-        ? block.image.caption.map((text: RichText) => text.plain_text).join('')
+        ? block.image.caption.map((text: RichTextItem) => text.plain_text).join('')
         : '';
 
       return (
@@ -272,7 +259,7 @@ const renderBlock = (block: NotionBlock) => {
           <div className="relative w-full h-64 md:h-96">
             <Image
               src={src}
-              alt={caption || 'Image'}
+              alt={caption || ''}
               fill
               className="object-cover rounded-lg"
             />
@@ -305,27 +292,44 @@ const renderBlock = (block: NotionBlock) => {
         );
 
       case 'table':
+        const rows = block.children?.filter(child => child.type === 'table_row') || [];
+        const hasHeader = block.table?.has_column_header;
+        const headerRow = hasHeader ? rows[0] : null;
+        const bodyRows = hasHeader ? rows.slice(1) : rows;
+
         return (
           <div key={id} className="overflow-x-auto my-6 rounded-lg border border-gray-200 dark:border-gray-700">
             <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+              {hasHeader && headerRow && headerRow.table_row && (
+                  <thead className="bg-gray-50 dark:bg-gray-900/50">
+                      <tr key={headerRow.id}>
+                          {headerRow.table_row.cells.map((cell, i) => (
+                              <th key={i} scope="col" className="px-6 py-4 text-left text-sm font-bold text-gray-900 dark:text-gray-100 border-r last:border-r-0 border-gray-200 dark:border-gray-700">
+                                  {renderRichText(cell)}
+                              </th>
+                          ))}
+                      </tr>
+                  </thead>
+              )}
               <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                {block.children?.map((rowBlock) => {
+                {bodyRows.map((rowBlock) => {
                   if (rowBlock.type === 'table_row' && rowBlock.table_row) {
                     return (
                       <tr key={rowBlock.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
-                        {rowBlock.table_row.cells.map((cell, cellIndex) => (
-                          <td 
+                        {rowBlock.table_row.cells.map((cell, cellIndex) => {
+                           const isRowHeader = block.table?.has_row_header && cellIndex === 0;
+                           const CellTag = isRowHeader ? 'th' : 'td';
+                           return (
+                          <CellTag 
                             key={cellIndex} 
+                            scope={isRowHeader ? 'row' : undefined}
                             className={`px-6 py-4 text-sm text-gray-900 dark:text-gray-100 border-r last:border-r-0 border-gray-200 dark:border-gray-700 ${
-                              
-                              (block.table?.has_column_header && block.children && block.children.indexOf(rowBlock) === 0) ? 'font-bold bg-gray-50 dark:bg-gray-900/50' : ''
-                            } ${
-                              (block.table?.has_row_header && cellIndex === 0) ? 'font-bold bg-gray-50 dark:bg-gray-900/50' : ''
+                              isRowHeader ? 'font-bold bg-gray-50 dark:bg-gray-900/50 text-left' : ''
                             }`}
                           >
-                            {renderRichText(cell as any)}
-                          </td>
-                        ))}
+                            {renderRichText(cell)}
+                          </CellTag>
+                        )})}
                       </tr>
                     );
                   }

@@ -3,7 +3,8 @@
 import * as React from 'react';
 import {useEffect, useId, useRef, useState} from 'react';
 import Link from "next/link";
-import {FileTextIcon, GlobeIcon, HomeIcon, MenuIcon, PhoneIcon, ScaleIcon, X} from 'lucide-react';
+import { usePathname } from 'next/navigation';
+import {Eye, FileTextIcon, GlobeIcon, HomeIcon, MenuIcon, PhoneIcon, ScaleIcon, X} from 'lucide-react';
 import {
     NavigationMenu,
     NavigationMenuItem,
@@ -11,13 +12,12 @@ import {
     NavigationMenuList
 } from '@/components/ui/navigation-menu';
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from '@/components/ui/select';
-import {Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger, SheetClose} from "@/components/ui/sheet";
+import {Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger, SheetClose, SheetDescription} from "@/components/ui/sheet";
 import {cn} from '@/lib/utils';
 import ThemeToggle from "./ThemeToggle";
 import {useLocale} from '@/context/LocaleContext';
-import {ru} from '@/locales/ru';
-import {en} from '@/locales/en';
-import {by} from '@/locales/by';
+import { useAccessibility } from '@/context/AccessibilityContext';
+import { getDictionary } from "@/lib/i18n";
 
 interface NavItem {
     href: string;
@@ -43,7 +43,15 @@ interface HeaderProps {
 
 export function Header({ isHidden = false }: HeaderProps) {
     const {locale, setLocale} = useLocale();
-    const t = locale === 'ru' ? ru : locale === 'en' ? en : by;
+    const { isEnabled, toggleEnabled } = useAccessibility();
+    const pathname = usePathname();
+    const t = getDictionary(locale);
+
+    const openMenuLabel = locale === 'ru' ? 'Открыть меню' : locale === 'en' ? 'Open menu' : 'Адкрыць меню';
+    const closeMenuLabel = locale === 'ru' ? 'Закрыть меню' : locale === 'en' ? 'Close menu' : 'Закрыць меню';
+    const languageSelectLabel = locale === 'ru' ? 'Выбор языка' : locale === 'en' ? 'Select language' : 'Выбар мовы';
+    const a11yLabel = locale === 'ru' ? 'Версия для слабовидящих' : locale === 'en' ? 'Low vision mode' : 'Версія для людзей са слабым зрокам';
+    const themeLabel = locale === 'ru' ? 'Тема' : locale === 'en' ? 'Theme' : 'Тэма';
 
     const [isMobile, setIsMobile] = useState(false);
     const containerRef = useRef<HTMLElement>(null);
@@ -77,11 +85,16 @@ export function Header({ isHidden = false }: HeaderProps) {
                 {/* Left block: logo */}
                 <Link
                     href="/"
+                    onClick={(e) => {
+                        e.preventDefault();
+                        window.location.href = '/';
+                    }}
                     className="flex items-center gap-2 text-xl font-bold hover:opacity-80 transition-colors"
+                    aria-label={t.logo}
                 >
-                    <ScaleIcon size={24}/>
+                    <ScaleIcon size={24} aria-hidden="true" />
                     {/* Mobile version: two words in a line*/}
-                    <span className="flex flex-col sm:hidden leading-tight">
+                    <span className="flex flex-col sm:hidden leading-tight" aria-hidden="true">
                         {t.logo.split(" ").reduce<string[][]>((acc, word, i) => {
                             if (i % 2 === 0) {
                                 acc.push([word]);
@@ -94,7 +107,7 @@ export function Header({ isHidden = false }: HeaderProps) {
                     </span>
 
                     {/* Desktop version */}
-                    <span className="hidden sm:inline">{t.logo}</span>
+                    <span className="hidden sm:inline" aria-hidden="true">{t.logo}</span>
                 </Link>
 
                 <div className="flex items-center gap-4">
@@ -104,14 +117,22 @@ export function Header({ isHidden = false }: HeaderProps) {
                                 <NavigationMenuList className="gap-2">
                                     {navItems.map((item) => {
                                         const Icon = item.icon;
+                                        const isActive = pathname === item.href;
                                         return (
                                             <NavigationMenuItem key={item.href}>
                                                 <NavigationMenuLink
                                                     asChild
-                                                    className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground transition-colors"
+                                                    active={isActive}
+                                                    className={cn(
+                                                        "flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground transition-colors",
+                                                        isActive && "bg-accent text-accent-foreground"
+                                                    )}
                                                 >
-                                                    <Link href={item.href}>
-                                                        <Icon size={16}/>
+                                                    <Link 
+                                                        href={item.href}
+                                                        aria-current={isActive ? 'page' : undefined}
+                                                    >
+                                                        <Icon size={16} aria-hidden="true" />
                                                         <span>{t[item.key]}</span>
                                                     </Link>
                                                 </NavigationMenuLink>
@@ -122,10 +143,23 @@ export function Header({ isHidden = false }: HeaderProps) {
                             </NavigationMenu>
 
                             <ThemeToggle/>
+                            <button
+                                type="button"
+                                aria-label={a11yLabel}
+                                aria-pressed={isEnabled}
+                                onClick={toggleEnabled}
+                                className={cn(
+                                    "h-9 w-9 min-h-9 min-w-9 shrink-0 rounded-md border border-input bg-background shadow-xs hover:bg-accent hover:text-accent-foreground transition-colors inline-flex items-center justify-center leading-none",
+                                    isEnabled && "bg-accent text-accent-foreground"
+                                )}
+                            >
+                                <Eye size={16} />
+                            </button>
 
                             <Select value={locale} onValueChange={(v) => setLocale(v as "ru" | "en" | "by")}>
                                 <SelectTrigger
                                     id={`language-${selectId}`}
+                                    aria-label={languageSelectLabel}
                                     className="h-8 border-none px-2 shadow-none hover:bg-accent hover:text-accent-foreground"
                                 >
                                     <GlobeIcon size={16}/>
@@ -146,15 +180,26 @@ export function Header({ isHidden = false }: HeaderProps) {
                     {isMobile && (
                         <Sheet>
                             <SheetTrigger asChild>
-                                <button className="p-2 rounded-md hover:bg-accent hover:text-accent-foreground">
+                                <button
+                                    type="button"
+                                    aria-label={openMenuLabel}
+                                    className="p-2 rounded-md hover:bg-accent hover:text-accent-foreground"
+                                >
                                     <MenuIcon size={20}/>
                                 </button>
                             </SheetTrigger>
                             <SheetContent side="right" className="w-64 bg-white dark:bg-gray-950 border-l border-border">
                                 <SheetHeader className="flex flex-row items-center justify-between">
                                     <SheetTitle>{t.menuTitle}</SheetTitle>
+                                    <SheetDescription className="sr-only">
+                                        {t.menuTitle}
+                                    </SheetDescription>
                                     <SheetClose asChild>
-                                        <button className="p-1 rounded-md hover:bg-accent hover:text-accent-foreground transition-colors">
+                                        <button
+                                            type="button"
+                                            aria-label={closeMenuLabel}
+                                            className="p-1 rounded-md hover:bg-accent hover:text-accent-foreground transition-colors"
+                                        >
                                             <X size={20} />
                                         </button>
                                     </SheetClose>
@@ -162,28 +207,53 @@ export function Header({ isHidden = false }: HeaderProps) {
                                 <nav className="flex flex-col gap-2 mt-4">
                                     {navItems.map((item) => {
                                         const Icon = item.icon;
+                                        const isActive = pathname === item.href;
                                         return (
                                             <SheetClose asChild key={item.href}>
                                                 <Link
                                                     href={item.href}
-                                                    className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground transition-colors"
+                                                    aria-current={isActive ? 'page' : undefined}
+                                                    className={cn(
+                                                        "flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground transition-colors",
+                                                        isActive && "bg-accent text-accent-foreground"
+                                                    )}
                                                 >
-                                                    <Icon size={16}/>
+                                                    <Icon size={16} aria-hidden="true" />
                                                     <span>{t[item.key]}</span>
                                                 </Link>
                                             </SheetClose>
                                         );
                                     })}
-                                    <div className="mt-4 flex flex-col gap-2">
-                                        <ThemeToggle/>
-                                        <Select value={locale}
-                                                onValueChange={(v) => setLocale(v as "ru" | "en" | "by")}>
-                                            <SelectTrigger
-                                                id={`language-mobile-${selectId}`}
-                                                className="h-8 border px-2 shadow-none hover:bg-accent hover:text-accent-foreground"
-                                            >
-                                                <GlobeIcon size={16}/>
-                                                <SelectValue className="ml-2"/>
+                                </nav>
+
+                                <div className="flex flex-col gap-4 mt-6 pt-6 border-t border-border">
+                                    <div className="flex items-center justify-between px-2">
+                                        <span className="text-sm font-medium">{themeLabel}</span>
+                                        <ThemeToggle />
+                                    </div>
+
+                                    <div className="flex items-center justify-between px-2">
+                                        <span className="text-sm font-medium">{a11yLabel}</span>
+                                        <button
+                                            type="button"
+                                            aria-label={a11yLabel}
+                                            aria-pressed={isEnabled}
+                                            onClick={toggleEnabled}
+                                            className={cn(
+                                                "h-9 w-9 min-h-9 min-w-9 shrink-0 rounded-md border border-input bg-background shadow-xs hover:bg-accent hover:text-accent-foreground transition-colors inline-flex items-center justify-center leading-none",
+                                                isEnabled && "bg-accent text-accent-foreground"
+                                            )}
+                                        >
+                                            <Eye size={16} />
+                                        </button>
+                                    </div>
+
+                                    <div className="flex items-center justify-between px-2">
+                                        <span className="text-sm font-medium">{languageSelectLabel}</span>
+                                        <Select value={locale} onValueChange={(v) => setLocale(v as "ru" | "en" | "by")}>
+                                            <SelectTrigger className="w-[100px]">
+                                                <GlobeIcon size={16} className="mr-2"/>
+                                                <SelectValue />
                                             </SelectTrigger>
                                             <SelectContent>
                                                 {languages.map((lang) => (
@@ -194,7 +264,7 @@ export function Header({ isHidden = false }: HeaderProps) {
                                             </SelectContent>
                                         </Select>
                                     </div>
-                                </nav>
+                                </div>
                             </SheetContent>
                         </Sheet>
                     )}

@@ -1,14 +1,32 @@
 import { MetadataRoute } from 'next';
+import { getBaseUrl } from '@/lib/i18n';
 
 export default function robots(): MetadataRoute.Robots {
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://lawyer-site.com';
+  const baseUrl = getBaseUrl();
   
   return {
-    rules: {
-      userAgent: '*',
-      allow: '/',
-      disallow: '/private/',
-    },
+    rules: [
+      {
+        userAgent: '*',
+        allow: '/',
+        disallow: '/api/',
+      },
+      {
+        userAgent: 'Yandex',
+        allow: '/',
+        disallow: [
+          '/api/',
+          '/*?etext=*',
+          '/*?from=*',
+          '/*?utm_*',
+          '/*?gclid=*',
+          '/*?fbclid=*',
+          '/*?yclid=*',
+          '/*?ysclid=*',
+        ],
+      },
+    ],
+    host: baseUrl,
     sitemap: `${baseUrl}/sitemap.xml`,
   };
 }

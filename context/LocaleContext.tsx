@@ -1,10 +1,9 @@
 'use client';
 
-import { createContext, useContext, useState, useEffect, ReactNode } from "react";
+import { createContext, useContext, useState, ReactNode } from "react";
+import { Locale } from "@/lib/i18n";
 
-type Locale = "ru" | "en" | "by";
-
-interface LocaleContextProps {
+export interface LocaleContextProps {
     locale: Locale;
     setLocale: (locale: Locale) => void;
 }
@@ -14,14 +13,8 @@ const LocaleContext = createContext<LocaleContextProps>({
     setLocale: () => {},
 });
 
-export function LocaleProvider({ children }: { children: ReactNode }) {
-    const [locale, setLocaleState] = useState<Locale>("ru");
-
-    // Read with LocalStorage at first boot
-    useEffect(() => {
-        const saved = localStorage.getItem("locale") as Locale;
-        if (saved) setLocaleState(saved);
-    }, []);
+export function LocaleProvider({ children, initialLocale = "ru" }: { children: ReactNode; initialLocale?: Locale }) {
+    const [locale, setLocaleState] = useState<Locale>(initialLocale);
 
     const setLocale = (l: Locale) => {
         setLocaleState(l);

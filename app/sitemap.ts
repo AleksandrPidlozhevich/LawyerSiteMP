@@ -1,43 +1,57 @@
 import { MetadataRoute } from 'next';
 import { getBlogPosts } from '@/lib/notion';
+import { getBaseUrl } from '@/lib/i18n';
 
-const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://lawyer-site.com';
+const BASE_URL = getBaseUrl();
+const LOCALES = ['ru', 'en', 'by'] as const;
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const posts = await getBlogPosts();
+  const now = new Date();
 
-  const blogUrls = posts.map((post) => ({
+  const staticPages = [
+    { path: '', changeFrequency: 'yearly' as const, priority: 1, lastModified: now },
+    { path: '/blog', changeFrequency: 'daily' as const, priority: 0.8, lastModified: now },
+    { path: '/contacts', changeFrequency: 'monthly' as const, priority: 0.5, lastModified: now },
+    { path: '/privacy', changeFrequency: 'yearly' as const, priority: 0.3, lastModified: now },
+  ];
+
+  const staticUrls = staticPages.flatMap((page) =>
+    LOCALES.map((locale) => ({
+      url: `${BASE_URL}${page.path}?lang=${locale}`,
+      lastModified: page.lastModified,
+      changeFrequency: page.changeFrequency,
+      priority: page.priority,
+    })),
+  );
+
+  const xDefaultStaticUrls = staticPages.map((page) => ({
+    url: `${BASE_URL}${page.path}`,
+    lastModified: page.lastModified,
+    changeFrequency: page.changeFrequency,
+    priority: Math.max(0.1, page.priority - 0.2),
+  }));
+
+  const blogUrls = posts.flatMap((post) =>
+    LOCALES.map((locale) => ({
+      url: `${BASE_URL}/blog/${post.slug}?lang=${locale}`,
+      lastModified: new Date(post.publishedDate),
+      changeFrequency: 'weekly' as const,
+      priority: 0.7,
+    })),
+  );
+
+  const xDefaultBlogUrls = posts.map((post) => ({
     url: `${BASE_URL}/blog/${post.slug}`,
     lastModified: new Date(post.publishedDate),
     changeFrequency: 'weekly' as const,
-    priority: 0.7,
+    priority: 0.5,
   }));
 
   return [
-    {
-      url: BASE_URL,
-      lastModified: new Date(),
-      changeFrequency: 'yearly',
-      priority: 1,
-    },
-    {
-      url: `${BASE_URL}/blog`,
-      lastModified: new Date(),
-      changeFrequency: 'daily',
-      priority: 0.8,
-    },
-    {
-      url: `${BASE_URL}/contacts`,
-      lastModified: new Date(),
-      changeFrequency: 'monthly',
-      priority: 0.5,
-    },
-    {
-      url: `${BASE_URL}/privacy`,
-      lastModified: new Date(),
-      changeFrequency: 'yearly',
-      priority: 0.3,
-    },
+    ...staticUrls,
+    ...xDefaultStaticUrls,
     ...blogUrls,
+    ...xDefaultBlogUrls,
   ];
 }

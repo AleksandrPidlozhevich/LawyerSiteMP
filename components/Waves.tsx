@@ -255,23 +255,27 @@ export const Waves = forwardRef<HTMLDivElement, WavesProps>(({
                 waveAmpY *= 0.8;
             }
 
+            const timeX = time * waveSpeedX * 0.002;
+            const timeY = time * waveSpeedY * 0.0015;
+
             lines.forEach((pts) => {
-                pts.forEach((p) => {
-                    const move =
-                        noise.perlin2(
-                            (p.x + time * waveSpeedX) * 0.002,
-                            (p.y + time * waveSpeedY) * 0.0015
-                        ) * 12;
+                for (let i = 0; i < pts.length; i++) {
+                    const p = pts[i];
+                    const move = noise.perlin2(
+                        p.x * 0.002 + timeX,
+                        p.y * 0.0015 + timeY
+                    ) * 12;
                     p.wave.x = Math.cos(move) * waveAmpX;
                     p.wave.y = Math.sin(move) * waveAmpY;
-                });
+                }
             });
         }
 
         function moved(point: Point): { x: number; y: number } {
-            const x = point.x + point.wave.x;
-            const y = point.y + point.wave.y;
-            return { x: Math.round(x * 10) / 10, y: Math.round(y * 10) / 10 };
+            return { 
+                x: point.x + point.wave.x, 
+                y: point.y + point.wave.y 
+            };
         }
 
         function drawLines() {
@@ -318,7 +322,6 @@ export const Waves = forwardRef<HTMLDivElement, WavesProps>(({
                     const p2 = moved(points[i]);
                     
                     if (isMobile() && i < points.length - 1) {
-                        const p3 = moved(points[i + 1]);
                         const cpx = (p1.x + p2.x) / 2;
                         const cpy = (p1.y + p2.y) / 2;
                         ctx.quadraticCurveTo(p1.x, p1.y, cpx, cpy);
@@ -336,7 +339,9 @@ export const Waves = forwardRef<HTMLDivElement, WavesProps>(({
         }
 
         function tick(t: number) {
-            const targetFPS = isMobile() ? 30 : 60;
+            // Drop targetFPS on desktop to 30 to significantly reduce CPU usage 
+            // without drastically changing the visual smoothness of slow waves
+            const targetFPS = 30;
             const frameInterval = 1000 / targetFPS;
             
             if (t - lastFrameTimeRef.current >= frameInterval) {

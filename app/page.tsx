@@ -1,184 +1,37 @@
 // app/page.tsx
-"use client";
 
-import { motion } from "framer-motion";
-import { useState, useEffect } from "react";
-import { Trophy, Users, Calendar, CheckCircle } from "lucide-react";
-import Image from "next/image";
-import CallbackModal from "../components/CallbackModal";
-import WorkingStepper from "../components/WorkingStepper";
-import Waves from "../components/Waves";
-import { FlipWords } from "@/components/ui/flip-words"
-import { useLocale } from '@/context/LocaleContext';
-import { ru } from '@/locales/ru';
-import { en } from '@/locales/en';
-import { by } from '@/locales/by';
+import HomeClient from "@/components/HomeClient";
+import { cookies, headers } from "next/headers";
+import { getBaseUrl, getDictionary, resolveLocale } from "@/lib/i18n";
 
-export default function Home() {
-    const [showCallbackModal, setShowCallbackModal] = useState(false);
-    const [isVisible, setIsVisible] = useState(false);
-    const { locale } = useLocale();
-    const t = locale === 'ru' ? ru : locale === 'en' ? en : by;
+const BASE_URL = getBaseUrl();
 
-    useEffect(() => {
-        setIsVisible(true);
-    }, []);
+export default async function Home() {
+    const cookieStore = await cookies();
+    const headerList = await headers();
+    const locale = resolveLocale(cookieStore.get("NEXT_LOCALE")?.value, headerList.get("accept-language"));
+    const t = getDictionary(locale);
 
-    const achievements = [
-        {
-            icon: Trophy,
-            value: "95%",
-            label: t.wonCases,
-            color: "text-amber-600 dark:text-amber-500"
-        },
-        {
-            icon: Users,
-            value: "1000+",
-            label: t.satisfiedCustomers,
-            color: "text-slate-600 dark:text-slate-400"
-        },
-        {
-            icon: Calendar,
-            value: "15",
-            label: t.yearsOfExperience,
-            color: "text-slate-700 dark:text-slate-300"
-        },
-        {
-            icon: CheckCircle,
-            value: "24/7",
-            label: t.clientSupport,
-            color: "text-slate-600 dark:text-slate-400"
-        }
-    ];
+    const breadcrumbJsonLd = {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+            {
+                "@type": "ListItem",
+                "position": 1,
+                "name": t.home,
+                "item": `${BASE_URL}/`
+            }
+        ]
+    };
 
     return (
-        <div className="relative min-h-screen overflow-hidden">
-            <div className="fixed inset-0 h-full w-full z-0 filter">
-                <Waves
-                    backgroundColor="transparent"
-                    waveSpeedX={0.05}
-                    waveSpeedY={0.05}
-                    waveAmpX={25}
-                    waveAmpY={25}
-                    xGap={15}
-                    yGap={15}
-                    className="absolute inset-0"
-                />
-            </div>
-
-            <section className="flex flex-col items-center py-16 px-4 relative z-10">
-                <div className="max-w-7xl w-full">
-                    {/* Basic content with the image */}
-                    <div className="grid lg:grid-cols-2 gap-12 items-center mb-16">
-                        {/*Left column - Text */}
-                        <motion.div
-                            initial={{ opacity: 0, x: -40 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            transition={{ duration: 0.8 }}
-                            className="text-center lg:text-left order-2 lg:order-1"
-                        >
-                            {/* The main title */}
-                            <motion.h1 className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-bold mb-6 text-center lg:text-left leading-tight">
-                                <div>{t.your}</div>
-                                <div className="text-blue-600 h-[1.2em] relative">
-                                    <FlipWords
-                                        words={t.flipWords}
-                                        duration={3500}
-                                    />
-                                </div>
-                                <div>{t.lawyer}</div>
-                            </motion.h1>
-
-                            {/* description */}
-                            <motion.p
-                                className="text-lg mb-8 whitespace-pre-line text-muted-foreground"
-                                initial={{ opacity: 0 }}
-                                animate={{ opacity: 1 }}
-                                transition={{ delay: 0.3, duration: 0.8 }}
-                            >
-                                {t.professionalAssistance}
-                            </motion.p>
-
-                            {/* Button */}
-                            <motion.button
-                                onClick={() => setShowCallbackModal(true)}
-                                whileHover={{
-                                    scale: 1.05,
-                                    boxShadow: "0 10px 25px -5px rgba(59, 130, 246, 0.4)"
-                                }}
-                                whileTap={{ scale: 0.95 }}
-                                className="px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-full shadow-lg transition-all relative overflow-hidden"
-                            >
-                                <span className="relative z-10">{t.orderCallback}</span>
-                            </motion.button>
-                        </motion.div>
-
-                        {/* Right column - image */}
-                        <motion.div
-                            initial={{ opacity: 0, x: 40 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            transition={{ duration: 0.8, delay: 0.2 }}
-                            className="relative order-1 lg:order-2"
-                        >
-                            <div className="relative w-full max-w-md mx-auto lg:max-w-none">
-                                <div className="relative aspect-[3/4] w-full">
-                                    <Image
-                                        src="/Gemini_Generated_Image_example_lawyer.png"
-                                        alt={t.professionalLawyer}
-                                        fill
-                                        className="object-cover rounded-2xl shadow-2xl"
-                                        priority
-                                        sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 40vw"
-                                    />
-                                    {/* Decorative elements */}
-                                    <div className="absolute -inset-4 bg-gradient-to-r from-blue-600/20 to-purple-600/20 rounded-2xl blur-xl -z-10"></div>
-                                </div>
-                            </div>
-                        </motion.div>
-                    </div>
-
-                    {/*achievement section */}
-                    <motion.div
-                        initial={{ opacity: 0, y: 30 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.6, duration: 0.8 }}
-                        className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-20"
-                    >
-                        {achievements.map((achievement, index) => {
-                            const IconComponent = achievement.icon;
-                            return (
-                                <motion.div
-                                    key={index}
-                                    initial={{ opacity: 0, scale: 0.8 }}
-                                    animate={{ opacity: 1, scale: 1 }}
-                                    transition={{ delay: 0.8 + index * 0.1, duration: 0.5 }}
-                                    whileHover={{ scale: 1.02 }}
-                                    className="bg-card/90 backdrop-blur-sm border border-border rounded-xl p-6 shadow-md hover:shadow-lg transition-all duration-300"
-                                >
-                                    <div className="flex flex-col items-center space-y-3">
-                                        <div className={`p-3 rounded-lg bg-slate-100 dark:bg-slate-800 ${achievement.color}`}>
-                                            <IconComponent size={24} />
-                                        </div>
-                                        <div className="text-2xl font-bold text-foreground">
-                                            {achievement.value}
-                                        </div>
-                                        <div className="text-sm text-muted-foreground text-center leading-tight">
-                                            {achievement.label}
-                                        </div>
-                                    </div>
-                                </motion.div>
-                            );
-                        })}
-                    </motion.div>
-
-                    {/* Working Steps Stepper */}
-                    <WorkingStepper />
-                </div>
-
-                {showCallbackModal && (
-                    <CallbackModal onClose={() => setShowCallbackModal(false)} />
-                )}
-            </section>
-        </div>
+        <>
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+            />
+            <HomeClient />
+        </>
     );
 }

@@ -64,10 +64,86 @@ interface NotionBlock {
   table_row?: {
     cells: RichText[][];
   };
+  to_do?: {
+    rich_text: RichText[];
+    checked: boolean;
+  };
+  toggle?: {
+    rich_text: RichText[];
+  };
+  divider?: Record<string, never>;
+  column_list?: Record<string, never>;
+  column?: Record<string, never>;
+  video?: {
+    file?: { url: string };
+    external?: { url: string };
+    caption?: RichText[];
+  };
+  audio?: {
+    file?: { url: string };
+    external?: { url: string };
+    caption?: RichText[];
+  };
+  file?: {
+    file?: { url: string };
+    external?: { url: string };
+    caption?: RichText[];
+    name?: string;
+  };
+  pdf?: {
+    file?: { url: string };
+    external?: { url: string };
+    caption?: RichText[];
+    name?: string;
+  };
+  bookmark?: {
+    url: string;
+    caption?: RichText[];
+  };
+  embed?: {
+    url: string;
+    caption?: RichText[];
+  };
+  equation?: {
+    expression: string;
+  };
+  synced_block?: {
+    synced_from?: { block_id: string } | null;
+  };
+  link_to_page?: {
+    type: string;
+    page_id?: string;
+    database_id?: string;
+  };
+  link_preview?: {
+    url: string;
+  };
+  child_page?: {
+    title: string;
+  };
+  child_database?: {
+    title: string;
+  };
+  table_of_contents?: {
+    color: string;
+  };
+  breadcrumb?: Record<string, never>;
+  template?: {
+    rich_text: RichText[];
+  };
 }
 
 interface RichText {
   plain_text: string;
+  href?: string | null;
+  annotations: {
+    bold: boolean;
+    italic: boolean;
+    strikethrough: boolean;
+    underline: boolean;
+    code: boolean;
+    color: string;
+  };
   [key: string]: unknown;
 }
 
@@ -260,7 +336,7 @@ async function convertNotionPageToBlogPost(page: NotionPage): Promise<BlogPost |
     let content: NotionBlock[] = [];
     try {
       content = await getPageContent(page.id);
-    } catch (_) {
+    } catch {
       content = [];
     }
 
@@ -372,6 +448,15 @@ function estimateWordCount(blocks: NotionBlock[]): number {
         break;
       case 'code':
         text = (block as { code?: { rich_text?: RichText[] } }).code?.rich_text?.map((t: RichText) => t.plain_text).join('') || '';
+        break;
+      case 'to_do':
+        text = (block as { to_do?: { rich_text?: RichText[] } }).to_do?.rich_text?.map((t: RichText) => t.plain_text).join('') || '';
+        break;
+      case 'toggle':
+        text = (block as { toggle?: { rich_text?: RichText[] } }).toggle?.rich_text?.map((t: RichText) => t.plain_text).join('') || '';
+        break;
+      case 'callout':
+        text = (block as { callout?: { rich_text?: RichText[] } }).callout?.rich_text?.map((t: RichText) => t.plain_text).join('') || '';
         break;
     }
     

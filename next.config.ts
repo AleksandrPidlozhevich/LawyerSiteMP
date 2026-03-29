@@ -38,7 +38,17 @@ const nextConfig: NextConfig = {
   compress: true,
   poweredByHeader: false,
   experimental: {
+    optimizeCss: true,
+    inlineCss: true,
     optimizePackageImports: ['lucide-react', 'framer-motion'],
+  },
+  async rewrites() {
+    return [
+      {
+        source: '/robots.txt',
+        destination: '/api/robots',
+      },
+    ];
   },
 };
 

@@ -1,17 +1,24 @@
 // components/CallbackModal.tsx
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { X, User, Mail, Phone, MessageCircle } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useLocale } from '@/context/LocaleContext';
-import { ru } from '@/locales/ru';
-import { en } from '@/locales/en';
-import { by } from '@/locales/by';
+import { getDictionary } from '@/lib/i18n';
 import Link from 'next/link';
 import { submitCallback } from "@/app/actions";
+import { formatPhoneNumber, getCleanPhoneNumber } from "@/lib/utils";
+
+const YM_ID = process.env.NEXT_PUBLIC_YANDEX_METRIKA_ID;
+
+declare global {
+    interface Window {
+        ym?: (id: string | number | undefined, ...args: unknown[]) => void;
+    }
+}
 
 interface CallbackModalProps {
     onClose: () => void;
@@ -22,7 +29,7 @@ export default function CallbackModal({ onClose }: CallbackModalProps) {
     const [submitError, setSubmitError] = useState<string | null>(null);
 
     const { locale } = useLocale();
-    const t = locale === 'ru' ? ru : locale === 'en' ? en : by;
+    const t = getDictionary(locale);
 
     // Schema definition
     const schema = z.object({
@@ -56,6 +63,50 @@ export default function CallbackModal({ onClose }: CallbackModalProps) {
     });
 
     const phoneValue = watch("phone");
+    const modalRef = useRef<HTMLDivElement>(null);
+
+    // Handle Escape key and focus management
+    useEffect(() => {
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if (e.key === 'Escape') {
+                onClose();
+            }
+            // Simple focus trap
+            if (e.key === 'Tab' && modalRef.current) {
+                const focusableElements = modalRef.current.querySelectorAll(
+                    'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+                );
+                const firstElement = focusableElements[0] as HTMLElement;
+                const lastElement = focusableElements[focusableElements.length - 1] as HTMLElement;
+
+                if (e.shiftKey) {
+                    if (document.activeElement === firstElement) {
+                        lastElement.focus();
+                        e.preventDefault();
+                    }
+                } else {
+                    if (document.activeElement === lastElement) {
+                        firstElement.focus();
+                        e.preventDefault();
+                    }
+                }
+            }
+        };
+
+        document.addEventListener('keydown', handleKeyDown);
+        
+        // Focus first input on mount
+        const firstInput = modalRef.current?.querySelector('input');
+        if (firstInput) {
+            firstInput.focus();
+        } else {
+            modalRef.current?.focus();
+        }
+
+        return () => {
+            document.removeEventListener('keydown', handleKeyDown);
+        };
+    }, [onClose]);
 
     // Block scrolling when opening a modal window
     useEffect(() => {
@@ -88,35 +139,6 @@ export default function CallbackModal({ onClose }: CallbackModalProps) {
         };
     }, []);
 
-    const formatPhoneNumber = (value: string) => {
-        let digits = value.replace(/\D/g, '');
-
-        if (digits.startsWith('375')) {
-            digits = digits.substring(3);
-        }
-
-        digits = digits.substring(0, 9);
-
-        if (digits.length === 0) return '';
-        if (digits.length <= 2) return `+375 (${digits}`;
-        if (digits.length <= 5) return `+375 (${digits.substring(0, 2)}) ${digits.substring(2)}`;
-        if (digits.length <= 7) return `+375 (${digits.substring(0, 2)}) ${digits.substring(2, 5)}-${digits.substring(5)}`;
-        return `+375 (${digits.substring(0, 2)}) ${digits.substring(2, 5)}-${digits.substring(5, 7)}-${digits.substring(7)}`;
-    };
-
-    const getCleanPhoneNumber = (formattedPhone: string) => {
-        const digits = formattedPhone.replace(/\D/g, '');
-        
-        if (digits.startsWith('375') && digits.length === 12) {
-            return `+${digits}`;
-        }
-        
-        if (digits.length === 9) {
-            return `+375${digits}`;
-        }
-        return formattedPhone;
-    };
-
     const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const formatted = formatPhoneNumber(e.target.value);
         setValue("phone", formatted, { shouldValidate: true });
@@ -140,6 +162,8 @@ export default function CallbackModal({ onClose }: CallbackModalProps) {
             }
 
             setSubmitSuccess(true);
+            
+            window.ym?.(YM_ID, 'reachGoal', 'ORDER_CALLBACK');
         } catch (error: unknown) {
             if (error instanceof Error) {
                 setSubmitError(error.message || t.errorSendingRequest);
@@ -151,19 +175,29 @@ export default function CallbackModal({ onClose }: CallbackModalProps) {
 
     if (submitSuccess) {
         return (
-            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 md:p-4">
-                <div className="relative w-full h-full md:w-auto md:h-auto md:max-w-md bg-card md:rounded-lg shadow-lg p-6 border flex flex-col justify-center md:justify-start">
+            <div 
+                className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 md:p-4"
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="success-title"
+            >
+                <div 
+                    ref={modalRef}
+                    className="relative w-full h-full md:w-auto md:h-auto md:max-w-md bg-card md:rounded-lg shadow-lg p-6 border flex flex-col justify-center md:justify-start"
+                    tabIndex={-1}
+                >
                     <button
                         onClick={onClose}
                         className="absolute top-4 right-4 p-2 rounded-full hover:bg-accent z-10"
+                        aria-label={t.close}
                     >
                         <X size={24} className="text-foreground" />
                     </button>
                     <div className="text-center">
                         <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100 dark:bg-green-900">
-                            <Phone className="h-6 w-6 text-green-600 dark:text-green-400" />
+                            <Phone className="h-6 w-6 text-green-600 dark:text-green-400" aria-hidden="true" />
                         </div>
-                        <h2 className="mt-4 text-2xl font-bold text-foreground">{t.requestSent}</h2>
+                        <h2 id="success-title" className="mt-4 text-2xl font-bold text-foreground">{t.requestSent}</h2>
                         <p className="mt-2 text-muted-foreground">
                             {t.willContactYou} {getCleanPhoneNumber(phoneValue)}.
                         </p>
@@ -180,23 +214,33 @@ export default function CallbackModal({ onClose }: CallbackModalProps) {
     }
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 md:p-4">
-            <div className="relative w-full h-full md:w-auto md:h-auto md:max-w-md bg-card md:rounded-lg shadow-lg p-6 md:max-h-[90vh] overflow-y-auto border">
+        <div 
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 md:p-4"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="modal-title"
+        >
+            <div 
+                ref={modalRef}
+                className="relative w-full h-full md:w-auto md:h-auto md:max-w-md bg-card md:rounded-lg shadow-lg p-6 md:max-h-[90vh] overflow-y-auto border"
+                tabIndex={-1}
+            >
                 <button
                     onClick={onClose}
                     className="absolute top-4 right-4 p-2 rounded-full hover:bg-accent z-10"
+                    aria-label={t.close}
                 >
                     <X size={24} className="text-foreground" />
                 </button>
 
                 <div className="h-full flex flex-col md:block">
-                    <h2 className="text-2xl font-bold mb-6 text-foreground pt-4 md:pt-0">{t.orderCallback}</h2>
+                    <h2 id="modal-title" className="text-2xl font-bold mb-6 text-foreground pt-4 md:pt-0">{t.orderCallback}</h2>
 
                     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 flex-1 flex flex-col">
                         <div className="flex-1 space-y-4">
                             <div>
                                 <label htmlFor="name" className="block text-sm font-medium text-foreground mb-1">
-                                    <User className="inline-block w-4 h-4 mr-1" />
+                                    <User className="inline-block w-4 h-4 mr-1" aria-hidden="true" />
                                     {t.yourName} *
                                 </label>
                                 <input
