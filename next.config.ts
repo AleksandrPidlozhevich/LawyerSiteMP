@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import { securityHeaders } from "./lib/security-headers";
 
 const nextConfig: NextConfig = {
   images: {
@@ -47,6 +48,14 @@ const nextConfig: NextConfig = {
       {
         source: '/robots.txt',
         destination: '/api/robots',
+      },
+    ];
+  },
+  async headers() {
+    return [
+      {
+        source: '/:path*',
+        headers: securityHeaders,
       },
     ];
   },
